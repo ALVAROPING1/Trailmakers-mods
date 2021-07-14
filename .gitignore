@@ -1,0 +1,15 @@
+.vscode/
+basicmod/
+blockmod/
+colormod/
+complexityMod/
+creatureSpawner/
+documentationmod/
+kickmod/
+position_rotation/
+spawnmod/
+spawnmodadv/
+trackmakermod/
+*.log
+Documentation.lua
+print_table.lua
