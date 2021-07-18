@@ -12,3 +12,5 @@ M: Advance time 1 frame, only works if time is stopped
 -: Reset elapsed time counters, only works if time is stopped  
 
 Disclaimer: physics might get a bit weird when advancing time frame by frame.  
+
+[Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2433591154)

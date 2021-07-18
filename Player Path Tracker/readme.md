@@ -5,3 +5,5 @@
 # Player Path Tracker  
 
 Records the path all players take and shows it on the map afterwards  
+
+[Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2521276008)

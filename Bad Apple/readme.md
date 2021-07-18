@@ -16,3 +16,5 @@ Included versions
 Note: on multiplayer, only the host can play them as loading a screen can cause a big fps drop (specially in the case of the bigger resolutions)  
 
 Disclaimer: The higher resolutions require a powerful pc in order to not crash while loading them  
+
+[Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2512054785)

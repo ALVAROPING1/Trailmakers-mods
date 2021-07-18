@@ -11,3 +11,5 @@ Start: Z
 Jump: X  
 
 Note: since the mod's UI doesn't use a monospace font (a font in which all the characters have the same width), i can't guarantee that the characters will always be perfectly aligned  
+
+[Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2488112563)

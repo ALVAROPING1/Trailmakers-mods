@@ -13,3 +13,5 @@ Includes:
 - Interpolate rotations  
 
 Documentation is included in the main.lua file  
+
+[Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2506160857)

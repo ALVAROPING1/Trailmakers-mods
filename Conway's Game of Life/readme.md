@@ -14,3 +14,5 @@ Configurable settings:
 Note: on multiplayer, only the host can use it as loading a screen can cause a big fps drop (specially in the case of higger resolutions)  
 
 Disclaimer: Higher resolutions require a powerful pc in order to not crash while loading the screen  
+
+[Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2530508096)
