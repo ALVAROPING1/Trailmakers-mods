@@ -1,4 +1,4 @@
-![Preview](/preview.png)
+![Preview](https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Bad%20Apple/preview.png)
 
 # Bad Apple!!  
 
