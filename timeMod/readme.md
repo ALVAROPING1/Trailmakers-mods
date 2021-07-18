@@ -1,4 +1,6 @@
-<img align="center" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/timeMod/preview.png" />
+<p align="center">
+    <img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/timeMod/preview.png" />
+</p>
 
 # Time Mod  
 

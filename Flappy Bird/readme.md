@@ -1,4 +1,6 @@
-<img align="center" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Flappy%20Bird/preview.png" />
+<p align="center">
+    <img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Flappy%20Bird/preview.png" />
+</p>
 
 # Flappy Bird  
 
