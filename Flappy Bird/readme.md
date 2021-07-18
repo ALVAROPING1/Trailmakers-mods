@@ -1,3 +1,5 @@
+<img align="middle" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Flappy%20Bird/preview.png" />
+
 # Flappy Bird  
 
 Allows to play "Flappy Bird" in game in the mod's UI  

@@ -1,3 +1,5 @@
+<img align="middle" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Player%20Path%20Tracker/preview.png" width="400" height="400" />
+
 # Player Path Tracker  
 
 Records the path all players take and shows it on the map afterwards  

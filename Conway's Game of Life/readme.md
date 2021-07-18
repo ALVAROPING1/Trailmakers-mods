@@ -1,3 +1,5 @@
+<img align="middle" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Conway's%20Game%20of%20Life/preview.png" width="400" height="400" />
+
 # Conway's Game of Life  
 
 Allows to play "Conway's Game of Life" in game using my "Screen Utilities" mod, which can be found here: https://github.com/ALVAROPING1/Trailmaker-mods/tree/master/ScreenUtilities  

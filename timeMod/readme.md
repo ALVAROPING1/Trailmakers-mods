@@ -1,3 +1,5 @@
+<img align="middle" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/timeMod/preview.png" />
+
 # Time Mod  
 
 Allows to stop time and advance it frame by frame, useful when debugging logic circuits. On multiplayer only the host can use it.  
