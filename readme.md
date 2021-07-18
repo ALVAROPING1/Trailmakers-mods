@@ -1,2 +1,2 @@
 # Trailmaker-mods
-Collection of the mods i have made for the game "Trailmakers"
+Collection of the mods I have made for the game "Trailmakers"
