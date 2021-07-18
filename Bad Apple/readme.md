@@ -1,3 +1,5 @@
+![Preview](/preview.png)
+
 # Bad Apple!!  
 
 Allows to play "Bad Apple!!" in game with different resolutions and framerates using my "Screen Utilities" mod, which can be found here: https://github.com/ALVAROPING1/Trailmaker-mods/tree/master/ScreenUtilities  
