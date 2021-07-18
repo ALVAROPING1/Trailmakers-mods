@@ -1,4 +1,4 @@
-<img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Bad%20Apple/preview.png" width="500" height="500" />
+<img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Bad%20Apple/preview.png" width="400" height="400" />
 
 # Bad Apple!!  
 
