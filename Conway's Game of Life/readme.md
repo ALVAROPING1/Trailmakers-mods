@@ -1,4 +1,4 @@
-<img align="middle" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Conway's%20Game%20of%20Life/preview.png" width="400" height="400" />
+<img align="center" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Conway's%20Game%20of%20Life/preview.png" width="400" height="400" />
 
 # Conway's Game of Life  
 

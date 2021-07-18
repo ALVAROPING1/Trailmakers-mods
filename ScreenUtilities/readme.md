@@ -1,4 +1,4 @@
-<img align="middle" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/ScreenUtilities/preview.png" width="400" height="400" />
+<img align="center" src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/ScreenUtilities/preview.png" width="400" height="400" />
 
 # Screen Utilities  
 
