@@ -16,3 +16,4 @@
 *.log
 Documentation.lua
 print_table.lua
+.markdownlint.json
