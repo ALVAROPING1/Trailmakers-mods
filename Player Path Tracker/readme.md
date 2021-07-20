@@ -1,6 +1,6 @@
-<p align="center">
+<h1 align="center">
     <img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Player%20Path%20Tracker/preview.png" width="400" height="400" />
-</p>
+</h1>
 
 # Player Path Tracker  
 

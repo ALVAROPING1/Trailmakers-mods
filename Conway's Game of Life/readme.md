@@ -1,6 +1,6 @@
-<p align="center">
+<h1 align="center">
     <img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Conway's%20Game%20of%20Life/preview.png" width="400" height="400" />
-</p>
+</h1>
 
 # Conway's Game of Life  
 

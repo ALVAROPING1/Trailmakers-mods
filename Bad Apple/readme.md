@@ -1,6 +1,6 @@
-<p align="center">
+<h1 align="center">
     <img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/Bad%20Apple/preview.png" width="400" height="400" />
-</p>
+</h1>
 
 # Bad Apple!!  
 
