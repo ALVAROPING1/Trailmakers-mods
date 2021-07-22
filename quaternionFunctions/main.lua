@@ -42,13 +42,18 @@ end
 --		_bodyRot: euler angles defining the rotation of the parent or the rotation transformation.
 --		_qRelative: relative quaternion between the rotations or quaternion defining the starting rotation the transformation will be applied to.
 --			Can be obtained with 'tm.quaternion.Create(_offsetRotationChild)' where '_offsetRotationChild' is either the rotation in euler angles of the child object when the parent's rotation is (0, 0, 0) or the starting rotation the transformation will be applied to,
---			or with 'getRelativeRotation()'.
+--			or with 'getRelativeRotation(_bodyRot, _childRot, true)' where '_bodyRot' is the rotation of the parent object and '_childRot' is the rotation of the child object, both in euler angles.
+--		_getQuaternion: boolean defining if the output will be a quaternion (true) or euler angles (false)
 -- Output:
---		_ChildRot: euler angles defining the rotation of the child.
-function getChildRotation(_bodyRot, _qRelative)
+--		_ChildRot: euler angles or quaternion (depending on '_getQuaternion') defining the rotation of the child.
+function getChildRotation(_bodyRot, _qRelative, _getQuaternion)
 	local _qParent = tm.quaternion.Create(_bodyRot)
 
-	local _ChildRot = _qParent.Multiply(_qRelative).GetEuler()
+	local _ChildRot = _qParent.Multiply(_qRelative)
+
+	if _getQuaternion == false then
+		_ChildRot = _ChildRot.GetEuler()
+	end
 
 	return _ChildRot
 end
@@ -61,16 +66,21 @@ end
 -- Input:
 --		_sourceRotation: euler angles defining the initial rotation.
 --		_targetRotation: euler angles defining the target rotation.
+--		_getQuaternion: boolean defining if the output will be a quaternion (true) or euler angles (false)
 -- Output:
---		_relativeRotation: euler angles defining the relative rotation.
-function getRelativeRotation(_sourceRotation, _targetRotation)
+--		_relativeRotation: euler angles or quaternion (depending on '_getQuaternion') defining the relative rotation.
+function getRelativeRotation(_sourceRotation, _targetRotation, _getQuaternion)
 	local _qTarget = tm.quaternion.Create(_targetRotation)
 
 	local _qTargetInverse = tm.quaternion.Create(-_qTarget.x, -_qTarget.y, -_qTarget.z, _qTarget.w)
 
 	local _qSource = tm.quaternion.Create(_sourceRotation)
 
-	local _relativeRotation = _qTargetInverse.Multiply(_qSource).GetEuler()
+	local _relativeRotation = _qTargetInverse.Multiply(_qSource)
+
+	if _getQuaternion == false then
+		_relativeRotation = _relativeRotation.GetEuler()
+	end
 
 	return _relativeRotation
 end
