@@ -179,7 +179,7 @@ function update()
 		positionWhale = playerPosition + offsetPositionWhale
 		whale.GetTransform().SetPosition(positionWhale)
 
-		offsetRotationWhale = getChildRotation(playerRotation, qRelative)
+		offsetRotationWhale = getChildRotation(playerRotation, qRelative, false)
 		whale.GetTransform().SetRotation(offsetRotationWhale)
 	end
 
