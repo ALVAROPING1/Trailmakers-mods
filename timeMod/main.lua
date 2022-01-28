@@ -153,6 +153,7 @@ timeSpeedToggle = false
 frames = 0
 timeSpeed = 1
 mode = 0
+loaded = false
 
 -- Update speed
 tm.os.SetModTargetDeltaTime(1/60)
@@ -164,9 +165,16 @@ keybinds = { -- Contains all the keybinds used
 	timeReset = "-"
 }
 
-tm.input.RegisterFunctionToKeyDownCallback(0, "onToggleActivate", keybinds.toggleActivate)
-tm.input.RegisterFunctionToKeyDownCallback(0, "onFrameAdvance", keybinds.frameAdvance)
-tm.input.RegisterFunctionToKeyDownCallback(0, "onTimeReset", keybinds.timeReset)
+function onPlayerJoined()
+	if not loaded then
+		tm.input.RegisterFunctionToKeyDownCallback(0, "onToggleActivate", keybinds.toggleActivate)
+		tm.input.RegisterFunctionToKeyDownCallback(0, "onFrameAdvance", keybinds.frameAdvance)
+		tm.input.RegisterFunctionToKeyDownCallback(0, "onTimeReset", keybinds.timeReset)
+		loaded = true
+	end
+end
+
+tm.players.onPlayerJoined.add(onPlayerJoined)
 
 -- UI
 generateFrameAdvanceUI()
