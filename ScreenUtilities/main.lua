@@ -55,7 +55,7 @@
 ---    ```
 --- - `_color2Rotation`: table containing the conversion between `colorValue` and rotation. Initialized during the `self.spawn()` function
 ---
---- Functions:
+--- Methods:
 --- - `spawn()`: spawns the screen. Returns nil
 --- - `despawn()`: despawns the screen and deletes the instance. Returns nil
 --- - `setNextFrameDelta(_nextFrame)`: sets `self.nextFrameDelta` according to `_nextFrame`. `_nextFrame` must be a table containing the color of each pixel in the next frame. Returns nil
@@ -112,128 +112,7 @@ screen = {
 	--- ```
 	_pixels = {},
 	--- Contains the conversion between `colorValue` and rotation. Initialized during the `self.spawn()` function
-	_color2Rotation = {},
-
-	--- Spawns the screen
-	---
-	---@param self screen
-	---@return nil
-	spawn = function (self)
-		local deltaHOrientation = tm.vector3.Create(math.cos(math.rad(self.orientation)), 0, math.sin(math.rad(self.orientation))) -- Creates a unit vector defining the direction of the horizontal axis according to 'orientation'
-
-		-- Table with the conversion between colorValue and rotation
-		self._color2Rotation = {
-			tm.vector3.Create(0, 0-self.orientation, 0),
-			tm.vector3.Create(0, 90-self.orientation, 0),
-			tm.vector3.Create(0, -90-self.orientation, 0),
-			tm.vector3.Create(0, 180-self.orientation, 0),
-			tm.vector3.Create(-90, 0-self.orientation, 180),
-			tm.vector3.Create(-90, 0-self.orientation, 0),
-		}
-
-		-- Vectors defining the space between pixels' positions
-		local deltaH = tm.vector3.op_Multiply(deltaHOrientation, self.pixelSize*2)
-		local deltaV = tm.vector3.Create(0, -self.pixelSize*2, 0)
-
-		-- Position of the top left pixel on the screen
-		local _position0 = self.position + tm.vector3.op_Multiply(-deltaV, self.sizeV)
-
-		self._pixels = {}
-		-- Creates each pixels' object
-		for positionH=0, self.sizeH-1 do
-			self._pixels[positionH] = {}
-			for positionV=0, self.sizeV-1 do
-				self._pixels[positionH][positionV] = {} -- Creates table to store the state of the pixel as well as its object reference
-
-				local position = _position0 + tm.vector3.op_Multiply(deltaH, positionH) + tm.vector3.op_Multiply(deltaV, positionV) -- Calculates the position of the pixel
-
-				-- Spawns the pixel and sets its size, default rotation and if it has collisions or not
-				self._pixels[positionH][positionV].object = tm.physics.SpawnCustomObjectRigidbody(position, self.cubeMesh, self.cubeTexture, true, 1)
-				self._pixels[positionH][positionV].object.GetTransform().SetScale(self.pixelSize)
-				self._pixels[positionH][positionV].object.GetTransform().SetRotation(self._color2Rotation[1])
-				if self.collision == false then
-					self._pixels[positionH][positionV].object.SetIsTrigger(true)
-				end
-
-				self._pixels[positionH][positionV].color = 0 -- Stores the default color
-
-			end
-		end
-	end,
-
-	--- Despawns the screen and deletes the instance
-	---
-	---@param self screen
-	---@return nil
-	despawn = function (self)
-		for positionH=0, self.sizeH-1 do
-			for positionV=0, self.sizeV-1 do
-				self._pixels[positionH][positionV].object.Despawn()
-			end
-		end
-		-- Deletes the instance
-		---@diagnostic disable-next-line: cast-local-type
-		self = nil
-	end,
-
-	--- Sets `self.nextFrameDelta` according to `_nextFrame`. `_nextFrame` must be a table containing the color of each pixel in the next frame
-	--- The structure of _nextFrame must be as follows:
-	--- ```
-	--- _nextFrame[positionH][positionV] = colorValue
-	--- ```
-	--- Where `positionH` and `positionV` are the coordinates of the pixel starting at 0 and with the origin being the top left pixel of the screen,
-	--- and `colorValue` is an integer from 0 to 5 (both included) describing the new color of the pixel
-	---
-	---@param self screen
-	---@param _nextFrame {[integer]: {[integer]: integer}}
-	---@return nil
-	setNextFrameDelta = function (self, _nextFrame)
-		self.nextFrameDelta = {} -- Clears 'self.nextFrameDelta'
-
-		for positionH=0, self.sizeH-1 do
-			for positionV=0, self.sizeV-1 do
-				if self._pixels[positionH][positionV].color ~= _nextFrame[positionH][positionV] then -- Checks if the new color is the same as the previous color, if it isn't adds the change to 'self.nextFrameDelta'
-					local pixelState = {position = {positionH, positionV}, color = _nextFrame[positionH][positionV]}
-					table.insert(self.nextFrameDelta, pixelState)
-				end
-			end
-		end
-	end,
-
-	--- Sets `self.nextFrameDelta` according to `partialNextFrameDelta`. `partialNextFrameDelta` works in the same way as manually setting `self.nextFrameDelta`
-	--- with the exception that it can contain pixels which do not change, `setPartialNextFrameDelta()` will automatically remove those
-	---
-	---@param self screen
-	---@param partialNextFrameDelta {[integer]: {position: {[1]: integer, [2]: integer}, color: integer}}
-	---@return nil
-	setPartialNextFrameDelta = function (self, partialNextFrameDelta)
-		self.nextFrameDelta = {} -- Clears 'self.nextFrameDelta'
-
-		for key, pixelState in pairs(partialNextFrameDelta) do
-			local positionH = pixelState.position[1]
-			local positionV = pixelState.position[2]
-			local color = pixelState.color
-
-			if self._pixels[positionH][positionV].color ~= color then -- Checks if the new color is the same as the previous color, if it isn't adds the change to 'self.nextFrameDelta'
-				table.insert(self.nextFrameDelta, pixelState)
-			end
-		end
-	end,
-
-	--- Updates the screen according to `self.nextFrameDelta`
-	---
-	---@param self screen
-	---@return nil
-	update = function (self)
-		for key, value in pairs(self.nextFrameDelta) do -- Applies the pixel changes described in 'self.nextFrameDelta'
-			local positionH = value.position[1]
-			local positionV = value.position[2]
-			local color = value.color
-
-			self._pixels[positionH][positionV].object.GetTransform().SetRotation(self._color2Rotation[color+1])
-			self._pixels[positionH][positionV].color = color
-		end
-	end
+	_color2Rotation = {}
 }
 
 --- Function defining how to create a new instance from the prototype
@@ -245,6 +124,122 @@ function screen:new(o)
 	setmetatable(o, self)
 	self.__index = self
 	return o
+end
+
+--- Spawns the screen
+---
+---@return nil
+function screen:spawn()
+	local deltaHOrientation = tm.vector3.Create(math.cos(math.rad(self.orientation)), 0, math.sin(math.rad(self.orientation))) -- Creates a unit vector defining the direction of the horizontal axis according to 'orientation'
+
+	-- Table with the conversion between colorValue and rotation
+	self._color2Rotation = {
+		tm.vector3.Create(0, 0-self.orientation, 0),
+		tm.vector3.Create(0, 90-self.orientation, 0),
+		tm.vector3.Create(0, -90-self.orientation, 0),
+		tm.vector3.Create(0, 180-self.orientation, 0),
+		tm.vector3.Create(-90, 0-self.orientation, 180),
+		tm.vector3.Create(-90, 0-self.orientation, 0),
+	}
+
+	-- Vectors defining the space between pixels' positions
+	local deltaH = tm.vector3.op_Multiply(deltaHOrientation, self.pixelSize*2)
+	local deltaV = tm.vector3.Create(0, -self.pixelSize*2, 0)
+
+	-- Position of the top left pixel on the screen
+	local _position0 = self.position + tm.vector3.op_Multiply(-deltaV, self.sizeV)
+
+	self._pixels = {}
+	-- Creates each pixels' object
+	for positionH=0, self.sizeH-1 do
+		self._pixels[positionH] = {}
+		for positionV=0, self.sizeV-1 do
+			self._pixels[positionH][positionV] = {} -- Creates table to store the state of the pixel as well as its object reference
+
+			local position = _position0 + tm.vector3.op_Multiply(deltaH, positionH) + tm.vector3.op_Multiply(deltaV, positionV) -- Calculates the position of the pixel
+
+			-- Spawns the pixel and sets its size, default rotation and if it has collisions or not
+			self._pixels[positionH][positionV].object = tm.physics.SpawnCustomObjectRigidbody(position, self.cubeMesh, self.cubeTexture, true, 1)
+			self._pixels[positionH][positionV].object.GetTransform().SetScale(self.pixelSize)
+			self._pixels[positionH][positionV].object.GetTransform().SetRotation(self._color2Rotation[1])
+			if self.collision == false then
+				self._pixels[positionH][positionV].object.SetIsTrigger(true)
+			end
+
+			self._pixels[positionH][positionV].color = 0 -- Stores the default color
+
+		end
+	end
+end
+
+--- Despawns the screen and deletes the instance
+---
+---@return nil
+function screen:despawn()
+	for positionH=0, self.sizeH-1 do
+		for positionV=0, self.sizeV-1 do
+			self._pixels[positionH][positionV].object.Despawn()
+		end
+	end
+	-- Deletes the instance
+	---@diagnostic disable-next-line: cast-local-type
+	self = nil
+end
+
+--- Sets `self.nextFrameDelta` according to `_nextFrame`. `_nextFrame` must be a table containing the color of each pixel in the next frame
+--- The structure of _nextFrame must be as follows:
+--- ```
+--- _nextFrame[positionH][positionV] = colorValue
+--- ```
+--- Where `positionH` and `positionV` are the coordinates of the pixel starting at 0 and with the origin being the top left pixel of the screen,
+--- and `colorValue` is an integer from 0 to 5 (both included) describing the new color of the pixel
+---
+---@param _nextFrame {[integer]: {[integer]: integer}}
+---@return nil
+function screen:setNextFrameDelta(_nextFrame)
+	self.nextFrameDelta = {} -- Clears 'self.nextFrameDelta'
+
+	for positionH=0, self.sizeH-1 do
+		for positionV=0, self.sizeV-1 do
+			if self._pixels[positionH][positionV].color ~= _nextFrame[positionH][positionV] then -- Checks if the new color is the same as the previous color, if it isn't adds the change to 'self.nextFrameDelta'
+				local pixelState = {position = {positionH, positionV}, color = _nextFrame[positionH][positionV]}
+				table.insert(self.nextFrameDelta, pixelState)
+			end
+		end
+	end
+end
+
+--- Sets `self.nextFrameDelta` according to `partialNextFrameDelta`. `partialNextFrameDelta` works in the same way as manually setting `self.nextFrameDelta`
+--- with the exception that it can contain pixels which do not change, `setPartialNextFrameDelta()` will automatically remove those
+---
+---@param partialNextFrameDelta {[integer]: {position: {[1]: integer, [2]: integer}, color: integer}}
+---@return nil
+function screen:setPartialNextFrameDelta(partialNextFrameDelta)
+	self.nextFrameDelta = {} -- Clears 'self.nextFrameDelta'
+
+	for key, pixelState in pairs(partialNextFrameDelta) do
+		local positionH = pixelState.position[1]
+		local positionV = pixelState.position[2]
+		local color = pixelState.color
+
+		if self._pixels[positionH][positionV].color ~= color then -- Checks if the new color is the same as the previous color, if it isn't adds the change to 'self.nextFrameDelta'
+			table.insert(self.nextFrameDelta, pixelState)
+		end
+	end
+end
+
+--- Updates the screen according to `self.nextFrameDelta`
+---
+---@return nil
+function screen:update()
+	for key, value in pairs(self.nextFrameDelta) do -- Applies the pixel changes described in 'self.nextFrameDelta'
+		local positionH = value.position[1]
+		local positionV = value.position[2]
+		local color = value.color
+
+		self._pixels[positionH][positionV].object.GetTransform().SetRotation(self._color2Rotation[color+1])
+		self._pixels[positionH][positionV].color = color
+	end
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -118,7 +118,7 @@ end
 --- - `_currentPosition`: current position in the interpolation
 --- - `_finished`: boolean determining if the interpolation has finished or not
 ---
---- Functions:
+--- Methods:
 --- - `positionFunction()`: makes `_currentPosition` be a function of `_relativeStep`, called once in each step (you shouldn't need to call it manually). Returns nil.
 ---    To change it do:
 ---    ```
@@ -147,45 +147,7 @@ interpolateQuaternions = {
 	_currentPosition = 0,
 
 	--- Determines if the interpolation has finished or not
-	_finished = false,
-
-	--- Makes `self._currentPosition` be a function of `_relativeStep`, called once in each step (you shouldn't need to call it manually). Returns nil.
-	---
-	--- To change it do:
-	--- ```
-	--- instanceName.positionFunction = function (self)
-	---     self._currentPosition = <expresion>
-	--- end
-	--- ```
-	--- Where `<expresion>` is a function of `self._relativeStep`
-	---
-	---@param self interpolateQuaternions
-	---@return nil
-	positionFunction = function (self)
-		self._currentPosition = self._relativeStep
-	end,
-
-	--- Advances 1 step the interpolation
-	---
-	---@param self interpolateQuaternions
-	---@return ModQuaternion self.currentRotation Quaternion defining the current rotation
-	---@return boolean _finished boolean determining if the interpolation has finished or not
-	update = function (self)
-		if self._finished == false then
-			self._currentStep = self._currentStep + 1
-			self._relativeStep = self._currentStep/self.totalSteps
-
-			self:positionFunction()
-
-			self.currentRotation = tm.quaternion.Slerp(self.startRotation, self.finalRotation, self._currentPosition)
-
-			if self._currentStep >= self.totalSteps then
-				self._finished = true
-			end
-		end
-
-		return self.currentRotation, self._finished
-	end
+	_finished = false
 }
 
 -- Function defining how to create a new instance from the prototype
@@ -197,6 +159,42 @@ function interpolateQuaternions:new(o)
 	setmetatable(o, self)
 	self.__index = self
 	return o
+end
+
+--- Makes `self._currentPosition` be a function of `_relativeStep`, called once in each step (you shouldn't need to call it manually). Returns nil.
+---
+--- To change it do:
+--- ```
+--- instanceName.positionFunction = function (self)
+---     self._currentPosition = <expresion>
+--- end
+--- ```
+--- Where `<expresion>` is a function of `self._relativeStep`
+---
+---@return nil
+function interpolateQuaternions:positionFunction()
+	self._currentPosition = self._relativeStep
+end
+
+--- Advances 1 step the interpolation
+---
+---@return ModQuaternion self.currentRotation Quaternion defining the current rotation
+---@return boolean _finished boolean determining if the interpolation has finished or not
+function interpolateQuaternions:update()
+	if self._finished == false then
+		self._currentStep = self._currentStep + 1
+		self._relativeStep = self._currentStep/self.totalSteps
+
+		self:positionFunction()
+
+		self.currentRotation = tm.quaternion.Slerp(self.startRotation, self.finalRotation, self._currentPosition)
+
+		if self._currentStep >= self.totalSteps then
+			self._finished = true
+		end
+	end
+
+	return self.currentRotation, self._finished
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
