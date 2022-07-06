@@ -7,12 +7,12 @@
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Rotates a vector with a given rotation.
--- Input:
---		_bodyRot: euler angles defining the rotation.
---		_vector: vector to rotate.
--- Output:
---		_rotatedVector: rotated vector.
+--- Rotates a vector with a given rotation.
+---
+---@param _bodyRot ModVector3 Euler angles defining the rotation
+---@param _vector ModVector3 Vector to rotate
+---
+---@return ModVector3 _rotatedVector Rotated vector
 function getVectorRotation(_bodyRot, _vector)
 	local q = tm.quaternion.Create(_bodyRot)
 
@@ -37,15 +37,16 @@ end
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Rotates a child object given the rotation of the parent and the relative rotation between the rotations of both objects. Can also be interpreted as applying rotation transformation to a rotation.
--- Input:
---		_bodyRot: euler angles defining the rotation of the parent or the rotation transformation.
---		_qRelative: relative quaternion between the rotations or quaternion defining the starting rotation the transformation will be applied to.
---			Can be obtained with 'tm.quaternion.Create(_offsetRotationChild)' where '_offsetRotationChild' is either the rotation in euler angles of the child object when the parent's rotation is (0, 0, 0) or the starting rotation the transformation will be applied to,
---			or with 'getRelativeRotation(_bodyRot, _childRot, true)' where '_bodyRot' is the rotation of the parent object and '_childRot' is the rotation of the child object, both in euler angles.
---		_getQuaternion: boolean defining if the output will be a quaternion (true) or euler angles (false)
--- Output:
---		_ChildRot: euler angles or quaternion (depending on '_getQuaternion') defining the rotation of the child.
+--- Rotates a child object given the rotation of the parent and the relative rotation between the rotations of both objects. Can also be interpreted as applying rotation transformation to a rotation
+---
+---@param _bodyRot ModVector3 Euler angles defining the rotation of the parent or the rotation transformation
+---@param _qRelative ModQuaternion Relative quaternion between the rotations or quaternion defining the starting rotation the transformation will be applied to
+--- Can be obtained with `tm.quaternion.Create(_offsetRotationChild)` where `_offsetRotationChild` is either the rotation in euler angles of the child object when the parent's rotation is (0, 0, 0) or
+--- the starting rotation the transformation will be applied to, or with `getRelativeRotation(_bodyRot, _childRot, true)` where `_bodyRot` is the rotation of the parent object and '_childRot' is the
+--- rotation of the child object, both in euler angles
+---@param _getQuaternion boolean Defines if the output will be a quaternion (`true`) or euler angles (`false`)
+---
+---@return ModVector3|ModQuaternion _ChildRot Euler angles or quaternion (depending on `_getQuaternion`) defining the rotation of the child
 function getChildRotation(_bodyRot, _qRelative, _getQuaternion)
 	local _qParent = tm.quaternion.Create(_bodyRot)
 
@@ -62,13 +63,13 @@ end
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Gets the relative rotation between 2 given rotations.
--- Input:
---		_sourceRotation: euler angles defining the initial rotation.
---		_targetRotation: euler angles defining the target rotation.
---		_getQuaternion: boolean defining if the output will be a quaternion (true) or euler angles (false)
--- Output:
---		_relativeRotation: euler angles or quaternion (depending on '_getQuaternion') defining the relative rotation.
+--- Gets the relative rotation between 2 given rotations
+---
+---@param _sourceRotation ModVector3 Euler angles defining the initial rotation
+---@param _targetRotation ModVector3 Euler angles defining the target rotation
+---@param _getQuaternion boolean Defines if the output will be a quaternion (`true`) or euler angles (`false`)
+---
+---@return ModVector3 _relativeRotation Euler angles or quaternion (depending on `_getQuaternion`) defining the relative rotation
 function getRelativeRotation(_sourceRotation, _targetRotation, _getQuaternion)
 	local _qTarget = tm.quaternion.Create(_targetRotation)
 
@@ -89,48 +90,86 @@ end
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Interpolates between 2 quaternions.
--- To create a new instance, do 'instanceName = interpolateQuaternions:new()'.
--- After creating an instance, you can do 'instanceName.Parameter = value' to change a parameter.
--- After creating an instance, you can do 'instanceName:function()' to call a function.
---
--- Public parameters:
---		startRotation: quaternion encoding the starting rotation, can be obtained from the euler angles with 'tm.quaternion.Create(tm.vector3.Create(eulerAngles)'.
---		finalRotation: quaternion encoding the final rotation, can be obtained from the euler angles with 'tm.quaternion.Create(tm.vector3.Create(eulerAngles)'.
---		totalSteps: amount of steps the rotation is going to take.
--- Private parameters (you shouldn't need to change these):
---		_currentRotation: quaternion encoding the current rotation.
---		_currentStep: current step in the interpolation.
---		_relativeStep: '_currentStep/totalSteps'.
---		_currentPosition: current position in the interpolation.
---		_finished: boolean determining if the interpolation has finished or not.
--- Functions
---		positionFunction(): makes _currentPosition be a function of _relativeStep, called once in each step (you shouldn't need to call it manually). Returns nil.
---			To change it do:
---			instanceName.positionFunction = function (self)
---				self._currentPosition = <expresion>
---			end
---			Where <expresion> is a function of 'self._relativeStep'.
---		update(): advances 1 step the interpolation. Returns '_currentRotation, _finished'.
---
--- Prototype of the class (includes default values and definitions):
+---@class interpolateQuaternions
+---@field startRotation ModQuaternion
+---@field finalRotation ModQuaternion
+---@field totalSteps integer
+---@field _currentRotation ModQuaternion
+---@field _currentStep integer
+---@field _relativeStep number
+---@field _currentPosition number
+---@field _finished boolean
+---
+--- Interpolates between 2 quaternions
+---
+--- To create a new instance, do `instanceName = interpolateQuaternions:new()`
+--- - After creating an instance, you can do `instanceName.Parameter = value` to change a parameter
+--- - After creating an instance, you can do `instanceName:function()` to call a function
+---
+--- Public parameters:
+--- - `startRotation`: quaternion defining the starting rotation, can be obtained from the euler angles with `tm.quaternion.Create(tm.vector3.Create(eulerAngles))`.
+--- - `finalRotation`: quaternion defining the final rotation, can be obtained from the euler angles with `tm.quaternion.Create(tm.vector3.Create(eulerAngles))`.
+--- - `totalSteps`: amount of steps the rotation is going to take
+---
+--- Private parameters (you shouldn't need to change these):
+--- - `_currentRotation`: quaternion defining the current rotation
+--- - `_currentStep`: current step in the interpolation
+--- - `_relativeStep`: `_currentStep/totalSteps`
+--- - `_currentPosition`: current position in the interpolation
+--- - `_finished`: boolean determining if the interpolation has finished or not
+---
+--- Functions:
+--- - `positionFunction()`: makes `_currentPosition` be a function of `_relativeStep`, called once in each step (you shouldn't need to call it manually). Returns nil.
+---    To change it do:
+---    ```
+---    instanceName.positionFunction = function (self)
+---        self._currentPosition = <expresion>
+---    end
+---    ```
+---    Where `<expresion>` is a function of `self._relativeStep`
+--- - `update()`: advances 1 step the interpolation. Returns `_currentRotation, _finished`
 interpolateQuaternions = {
-
+	--- Defines the starting rotation, can be obtained from the euler angles with `tm.quaternion.Create(tm.vector3.Create(eulerAngles))`.
 	startRotation = tm.quaternion.Create(tm.vector3.Create(90, 0, 0)),
+	--- Defines the final rotation, can be obtained from the euler angles with `tm.quaternion.Create(tm.vector3.Create(eulerAngles))`.
 	finalRotation = tm.quaternion.Create(tm.vector3.Create(-90, 0, 0)),
+	--- Amount of steps the rotation is going to take
+	totalSteps = 360,
+
+	--- Defines the current rotation
 	_currentRotation = tm.quaternion.Create(tm.vector3.Create(90, 0, 0)),
 
-	totalSteps = 360,
+	--- Current step in the interpolation
 	_currentStep = 0,
+	--- `_currentStep/totalSteps`
 	_relativeStep = 0,
+	--- Current position in the interpolation
 	_currentPosition = 0,
 
+	--- Determines if the interpolation has finished or not
 	_finished = false,
 
+	--- Makes `self._currentPosition` be a function of `_relativeStep`, called once in each step (you shouldn't need to call it manually). Returns nil.
+	---
+	--- To change it do:
+	--- ```
+	--- instanceName.positionFunction = function (self)
+	---     self._currentPosition = <expresion>
+	--- end
+	--- ```
+	--- Where `<expresion>` is a function of `self._relativeStep`
+	---
+	---@param self interpolateQuaternions
+	---@return nil
 	positionFunction = function (self)
 		self._currentPosition = self._relativeStep
 	end,
 
+	--- Advances 1 step the interpolation
+	---
+	---@param self interpolateQuaternions
+	---@return ModQuaternion self.currentRotation Quaternion defining the current rotation
+	---@return boolean _finished boolean determining if the interpolation has finished or not
 	update = function (self)
 		if self._finished == false then
 			self._currentStep = self._currentStep + 1
@@ -145,11 +184,14 @@ interpolateQuaternions = {
 			end
 		end
 
-		return self.currentRotation, self.finished
+		return self.currentRotation, self._finished
 	end
 }
 
 -- Function defining how to create a new instance from the prototype
+---
+---@param o table|nil
+---@return interpolateQuaternions
 function interpolateQuaternions:new(o)
 	o = o or {} -- create object if user does not provide one
 	setmetatable(o, self)
