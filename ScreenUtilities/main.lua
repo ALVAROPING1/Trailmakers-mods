@@ -37,16 +37,16 @@
 --		_color2Rotation: table containing the conversion between 'colorValue' and rotation.
 --
 -- Functions:
---		spawn(): spawns the screen. Returns void.
---		despawn(): despawns the screen and deletes the instance. Returns void.
---		setNextFrameDelta(_nextFrame): sets 'nextFrameDelta' according to '_nextFrame'. '_nextFrame' must be a table containing the color of each pixel in the next frame. Returns void.
+--		spawn(): spawns the screen. Returns nil.
+--		despawn(): despawns the screen and deletes the instance. Returns nil.
+--		setNextFrameDelta(_nextFrame): sets 'nextFrameDelta' according to '_nextFrame'. '_nextFrame' must be a table containing the color of each pixel in the next frame. Returns nil.
 --			The structure of _nextFrame is as follows:
 --			_nextFrame[positionH][positionV] = colorValue
 --			Where 'positionH' and 'positionV' are the coordinates of the pixel starting at 0 and with the origin being the top left pixel of the screen,
 --			and 'colorValue' is an integer from 0 to 5 (both included) describing the new color of the pixel.
 --		setPartialNextFrameDelta(_nextFrameDelta): sets 'nextFrameDelta' according to 'partialNextFrameDelta'. 'partialNextFrameDelta' works in the same way as manually
---			setting 'nextFrameDelta' with the exception that it can contain pixels which do not change, 'setPartialNextFrameDelta()' will automatically remove those. Returns void.
---		update(): updates the screen according to 'nextFrameDelta'. Returns void.
+--			setting 'nextFrameDelta' with the exception that it can contain pixels which do not change, 'setPartialNextFrameDelta()' will automatically remove those. Returns nil.
+--		update(): updates the screen according to 'nextFrameDelta'. Returns nil.
 
 -- Prototype of the class (includes default values and definitions)
 screen = {

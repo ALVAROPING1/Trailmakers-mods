@@ -105,7 +105,7 @@ end
 --		_currentPosition: current position in the interpolation.
 --		_finished: boolean determining if the interpolation has finished or not.
 -- Functions
---		positionFunction(): makes _currentPosition be a function of _relativeStep, called once in each step (you shouldn't need to call it manually). Returns void.
+--		positionFunction(): makes _currentPosition be a function of _relativeStep, called once in each step (you shouldn't need to call it manually). Returns nil.
 --			To change it do:
 --			instanceName.positionFunction = function (self)
 --				self._currentPosition = <expresion>
