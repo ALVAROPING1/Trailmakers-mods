@@ -50,33 +50,21 @@
 
 -- Prototype of the class (includes default values and definitions)
 screen = {
-	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5), -- Vector3 defining the position of the bottom left corner of the screen.
-	orientation = 0, -- Float defining the orientation of the screen in degrees. For the best result, it's recommended to keep it as multiple of 90.
+	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5),
+	orientation = 0,
 
-	pixelSize = 2^-4, -- Float defining the size of the individual pixels. For the best result, it's recommended to keep it as a sum of powers of 2.
-	collision = false, -- Boolean determining if the screen has collision or not. The method used to increase the LOD distance causes the hitbox to expand far away from one of the faces of the cube.
+	pixelSize = 2^-4,
+	collision = false,
 
-	sizeH = 15, -- Horizontal resolution.
-	sizeV = 15, -- Vertical resolution.
+	sizeH = 15,
+	sizeV = 15,
 
-	cubeMesh = "cubeObj", -- string pointing to the object to be used as the pixels. Must be loaded with 'tm.physics.AddMesh(filename, string)'. You shouldn't need to use any object other than the included 'cube.obj'.
-	-- String pointing to the texture to be used on the pixels to determine the color/image of each rotation. Must be loaded with 'tm.physics.AddTexture(filename, string)'.
-	-- A template with the position each color must be in is included in the file 'exampleTexture.png'. If using images for the texture rather than solid colors, you need to take into account that it will be
-	-- flipped horizontally when shown on the screen. Note: to remove weird reflections the alpha channel must be set to 0 on all pixels. To achieve this you can open the image in gimp,
-	-- then do layer->Add layer mask->select 'Black (full transparency)'->export as .png.
+	cubeMesh = "cubeObj",
 	cubeTexture = "cubePng",
 
-	-- Array containing which pixels need to be change and to which color for the next frame. Can be set manually or with the 'setNextFrameDelta()' or 'setPartialNextFrameDelta()' functions.
-	-- If set manually, the array must contain a table for each pixel which needs to change. The structure of each of this tables must be as follows:
-	-- {
-	-- 	position = {positionH, positionV},
-	-- 	color = colorValue
-	-- }
-	-- Where 'positionH' and 'positionV' are the coordinates of the pixel starting at 0 and with the origin being the top left pixel of the screen,
-	-- and 'colorValue' is an integer from 0 to 5 (both included) describing the new color of the pixel.
 	nextFrameDelta = {},
 
-	spawn = function (self) -- Spawns the screen. Returns void.
+	spawn = function (self)
 		local deltaHOrientation = tm.vector3.Create(math.cos(math.rad(self.orientation)), 0, math.sin(math.rad(self.orientation))) -- Creates a unit vector defining the direction of the horizontal axis according to 'orientation'
 
 		-- Table with the conversion between colorValue and rotation
@@ -119,7 +107,7 @@ screen = {
 		end
 	end,
 
-	despawn = function (self) -- Despawns the screen and deletes the instance. Returns void.
+	despawn = function (self)
 		for positionH=0, self.sizeH-1 do
 			for positionV=0, self.sizeV-1 do
 				self._pixels[positionH][positionV].object.Despawn()
@@ -128,11 +116,6 @@ screen = {
 		self = nil
 	end,
 
-	-- Sets 'nextFrameDelta' according to '_nextFrame'. '_nextFrame' must be a table containing the color of each pixel in the next frame. Returns void.
-	-- The structure of _nextFrame is as follows:
-	-- _nextFrame[positionH][positionV] = colorValue
-	-- Where 'positionH' and 'positionV' are the coordinates of the pixel starting at 0 and with the origin being the top left pixel of the screen,
-	-- and 'colorValue' is an integer from 0 to 5 (both included) describing the new color of the pixel.
 	setNextFrameDelta = function (self, _nextFrame)
 		self.nextFrameDelta = {} -- Clears 'nextFrameDelta'
 
@@ -146,8 +129,6 @@ screen = {
 		end
 	end,
 
-	-- Sets 'nextFrameDelta' according to 'partialNextFrameDelta'. 'partialNextFrameDelta' works in the same way as manually setting 'nextFrameDelta'
-	-- with the exception that it can contain pixels which do not change, 'setPartialNextFrameDelta()' will automatically remove those. Returns void.
 	---@param partialNextFrameDelta table
 	setPartialNextFrameDelta = function (self, partialNextFrameDelta)
 		self.nextFrameDelta = {} -- Clears 'nextFrameDelta'
@@ -163,7 +144,7 @@ screen = {
 		end
 	end,
 
-	update = function (self) -- Updates the screen according to 'nextFrameDelta'. Returns void.
+	update = function (self)
 		for key, value in pairs(self.nextFrameDelta) do -- Applies the pixel changes described in 'nextFrameDelta'
 			local positionH = value.position[1]
 			local positionV = value.position[2]
