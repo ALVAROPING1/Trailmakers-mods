@@ -23,7 +23,7 @@
 --			A template with the position each color must be in is included in the file 'exampleTexture.png'. If using images for the texture rather than solid colors, you need to take into account that it will be
 --			flipped horizontally when shown on the screen. Note: to remove weird reflections the alpha channel must be set to 0 on all pixels. To achieve this you can open the image in gimp,
 --			then do layer->Add layer mask->select 'Black (full transparency)'->export as .png.
---		nextFrameDelta: array containing which pixels need to be change and to which color for the next frame. Can be set manually or with the 'getNextFrameDelta()' or 'setPartialNextFrameDelta()' functions.
+--		nextFrameDelta: array containing which pixels need to be change and to which color for the next frame. Can be set manually or with the 'setNextFrameDelta()' or 'setPartialNextFrameDelta()' functions.
 --			If set manually, the array must contain a table for each pixel which needs to change. The structure of each of this tables must be as follows:
 --			{
 --				position = {positionH, positionV},
@@ -66,7 +66,7 @@ screen = {
 	-- then do layer->Add layer mask->select 'Black (full transparency)'->export as .png.
 	cubeTexture = "cubePng",
 
-	-- Array containing which pixels need to be change and to which color for the next frame. Can be set manually or with the 'getNextFrameDelta()' or 'setPartialNextFrameDelta()' functions.
+	-- Array containing which pixels need to be change and to which color for the next frame. Can be set manually or with the 'setNextFrameDelta()' or 'setPartialNextFrameDelta()' functions.
 	-- If set manually, the array must contain a table for each pixel which needs to change. The structure of each of this tables must be as follows:
 	-- {
 	-- 	position = {positionH, positionV},
