@@ -44,6 +44,7 @@ function screen:spawn()
 	local deltaH = tm.vector3.op_Multiply(deltaHOrientation, self.pixelSize*2)
 	local deltaV = tm.vector3.Create(0, -self.pixelSize*2, 0)
 
+	---@diagnostic disable-next-line: param-type-mismatch #The game implements an override to the `-` operator for ModVector3 negation
 	local _position0 = self.position + tm.vector3.op_Multiply(-deltaV, self.sizeV)
 
 	self._pixels = {}
@@ -52,6 +53,8 @@ function screen:spawn()
 		for positionV=0, self.sizeV-1 do
 			self._pixels[positionH][positionV] = {}
 
+			---@type ModVector3
+			---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 			local position = _position0 + tm.vector3.op_Multiply(deltaH, positionH) + tm.vector3.op_Multiply(deltaV, positionV)
 
 			self._pixels[positionH][positionV].object = tm.physics.SpawnCustomObjectRigidbody(position, self.cubeMesh, self.cubeTexture, true, 1)
@@ -62,7 +65,6 @@ function screen:spawn()
 			end
 
 			self._pixels[positionH][positionV].color = 0
-
 		end
 	end
 end

@@ -46,10 +46,11 @@ end
 --- rotation of the child object, both in euler angles
 ---@param _getQuaternion boolean Defines if the output will be a quaternion (`true`) or euler angles (`false`)
 ---
----@return ModVector3|ModQuaternion _ChildRot Euler angles or quaternion (depending on `_getQuaternion`) defining the rotation of the child
+---@return ModVector3 | ModQuaternion _ChildRot Euler angles or quaternion (depending on `_getQuaternion`) defining the rotation of the child
 function getChildRotation(_bodyRot, _qRelative, _getQuaternion)
 	local _qParent = tm.quaternion.Create(_bodyRot)
 
+	---@type ModVector3 | ModQuaternion
 	local _ChildRot = _qParent.Multiply(_qRelative)
 
 	if _getQuaternion == false then
@@ -69,7 +70,7 @@ end
 ---@param _targetRotation ModVector3 Euler angles defining the target rotation
 ---@param _getQuaternion boolean Defines if the output will be a quaternion (`true`) or euler angles (`false`)
 ---
----@return ModVector3 _relativeRotation Euler angles or quaternion (depending on `_getQuaternion`) defining the relative rotation
+---@return ModVector3 | ModQuaternion _relativeRotation Euler angles or quaternion (depending on `_getQuaternion`) defining the relative rotation
 function getRelativeRotation(_sourceRotation, _targetRotation, _getQuaternion)
 	local _qTarget = tm.quaternion.Create(_targetRotation)
 
@@ -77,6 +78,7 @@ function getRelativeRotation(_sourceRotation, _targetRotation, _getQuaternion)
 
 	local _qSource = tm.quaternion.Create(_sourceRotation)
 
+	---@type ModVector3 | ModQuaternion
 	local _relativeRotation = _qTargetInverse.Multiply(_qSource)
 
 	if _getQuaternion == false then
@@ -210,12 +212,16 @@ function update()
 
 		-- getVectorRotation example. Cube follows the rotation of the player
 		offsetPositionCube = getVectorRotation(playerRotation, offset)
+		---@type ModVector3
+		---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 		positionCube = playerPosition + offsetPositionCube
 		cube.GetTransform().SetPosition(positionCube)
 
 
 		-- getChildRotation example. Whale follows the rotation of the player and makes the relative rotation between player and whale constant
 		offsetPositionWhale = getVectorRotation(playerRotation, offset)
+		---@type ModVector3
+		---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 		positionWhale = playerPosition + offsetPositionWhale
 		whale.GetTransform().SetPosition(positionWhale)
 
@@ -245,6 +251,7 @@ function activateFollowObjects()
 	offset = tm.vector3.Create(0, -1, 0)
 
 	-- getChildRotation example
+	---@diagnostic disable-next-line: param-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 	whale = tm.physics.SpawnObject(tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0,2.5,0), "PFB_Whale")
 	whale.GetTransform().SetScale(0.1)
 	whale.SetIsStatic(true)
@@ -254,6 +261,7 @@ end
 
 
 -- interpolateQuaternions example
+---@diagnostic disable-next-line: param-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 whale2 = tm.physics.SpawnObject(tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0,2.5,0), "PFB_Whale")
 whale2.GetTransform().SetScale(0.1)
 whale2.SetIsStatic(true)
