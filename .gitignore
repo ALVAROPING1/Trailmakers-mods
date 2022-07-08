@@ -2,6 +2,7 @@
 /basicmod/
 /blockmod/
 /colormod/
+/Community_Map/
 /complexityMod/
 /creatureSpawner/
 /documentationmod/
@@ -15,6 +16,5 @@
 /*/data_dynamic_willNotBeUploadedToWorkshop/
 
 *.log
-Documentation.lua
 print_table.lua
 .markdownlint.json

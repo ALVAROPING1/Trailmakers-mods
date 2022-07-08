@@ -19,6 +19,8 @@ function onUpdateGravity()
 end
 
 function onLoadPlanet()
+	---@type ModVector3
+	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 	planetPosition = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(100, 0, 100)
 	tm.physics.SpawnObject(planetPosition, "PFB_MagneticCube").SetIsStatic(true)
 	tm.os.Log("Mod loaded")
