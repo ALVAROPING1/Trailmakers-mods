@@ -112,9 +112,13 @@ end
 
 -- Sets the time speed
 function onSetTimeSpeed(callbackData)
-	timeSpeed = tonumber(callbackData.value)
+	local _timeSpeed = tonumber(callbackData.value)
 
 	if timeSpeed ~= nil then
+		---@type number
+		---@diagnostic disable-next-line: assign-type-mismatch # We already checked that _timeSpeed is not nil
+		timeSpeed = _timeSpeed
+
 		if timeSpeed <= 0 then -- Makes sure speed is positive
 			timeSpeed = 1
 		end

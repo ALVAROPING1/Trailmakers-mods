@@ -278,7 +278,7 @@ end
 
 ---------------------------------------------------------------------------------------------
 -- UI Screens
-
+---@param callbackData integer | CallbackData
 function onLoadGameScreen(callbackData) -- Loads the game screen
 	local playerID
 	if type(callbackData) == "number" then
@@ -309,7 +309,7 @@ function onLoadGameScreen(callbackData) -- Loads the game screen
 	gameVariables[playerID].showHighscores = false
 end
 
-
+---@param callbackData integer | CallbackData
 function onLoadHighscoresScreen(callbackData) -- Loads the highscores screen
 	local playerID
 	if type(callbackData) == "number" then

@@ -55,7 +55,7 @@ end
 function show()
 	for key, playerPositionArray in pairs(pathTracker) do
 		for key2, playerPosition in pairs(playerPositionArray) do
-			local pos = tm.vector3.create(playerPosition.x, -10000, playerPosition.z)
+			local pos = tm.vector3.Create(playerPosition.x, -10000, playerPosition.z)
 			tm.physics.SpawnObject(pos, "PFB_Beacon")
 		end
 	end
