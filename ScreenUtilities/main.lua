@@ -71,7 +71,7 @@
 screen = {
 	--- Defines the position of the bottom left corner of the screen
 	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
-	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5),
+	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5),
 	--- Defines the orientation of the screen in degrees. For the best result, it's recommended to keep it as multiple of 90
 	orientation = 0,
 
@@ -257,7 +257,7 @@ function debugColors()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and pixel size, removes collisions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 6
 		_screen.sizeV = 1
 		_screen.pixelSize = 1
@@ -287,7 +287,7 @@ function activateVideo1()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and pixel size, removes collisions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 3
 		_screen.sizeV = 3
 		_screen.pixelSize = 2^-2
@@ -320,7 +320,7 @@ function activateVideo2()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and pixel size, removes collisions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 6
 		_screen.sizeV = 6
 		_screen.pixelSize = 2^-2

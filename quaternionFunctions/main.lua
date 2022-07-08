@@ -245,7 +245,7 @@ function activateFollowObjects()
 	offset = tm.vector3.Create(0, -1, 0)
 
 	-- getChildRotation example
-	whale = tm.physics.SpawnObject(tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0,2.5,0), "PFB_Whale")
+	whale = tm.physics.SpawnObject(tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0,2.5,0), "PFB_Whale")
 	whale.GetTransform().SetScale(0.1)
 	whale.SetIsStatic(true)
 	whale.SetIsTrigger(true)
@@ -254,7 +254,7 @@ end
 
 
 -- interpolateQuaternions example
-whale2 = tm.physics.SpawnObject(tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0,2.5,0), "PFB_Whale")
+whale2 = tm.physics.SpawnObject(tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0,2.5,0), "PFB_Whale")
 whale2.GetTransform().SetScale(0.1)
 whale2.SetIsStatic(true)
 whale2.SetIsTrigger(true)

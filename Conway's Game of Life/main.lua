@@ -4,7 +4,7 @@
 -- Screen prototype. Documentation and examples can be found on the standalone 'Screen Utilities' mod here: https://steamcommunity.com/sharedfiles/filedetails/?id=2511989739
 screen = {
 	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
-	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5),
+	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5),
 	orientation = 0,
 
 	pixelSize = 2^-4,
@@ -165,7 +165,7 @@ function spawnScreen()
 	_screen = screen:new()
 	_screen.sizeH = horizontalSize
 	_screen.sizeV = verticalSize
-	_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+	_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 	_screen:spawn()
 
 	-- Creates a 2D table to store the state of the game

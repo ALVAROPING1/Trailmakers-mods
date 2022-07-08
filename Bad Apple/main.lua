@@ -4,7 +4,7 @@
 -- Screen prototype. Documentation and examples can be found on the standalone 'Screen Utilities' mod here: https://steamcommunity.com/sharedfiles/filedetails/?id=2511989739
 screen = {
 	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
-	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5),
+	position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5),
 	orientation = 0,
 
 	pixelSize = 2^-4,
@@ -125,7 +125,7 @@ function activate80x60()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 80
 		_screen.sizeV = 60
 		_screen:spawn()
@@ -145,7 +145,7 @@ function activate60x45()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 60
 		_screen.sizeV = 45
 		_screen:spawn()
@@ -165,7 +165,7 @@ function activate48x36()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 48
 		_screen.sizeV = 36
 		_screen:spawn()
@@ -185,7 +185,7 @@ function activate40x30()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 40
 		_screen.sizeV = 30
 		_screen:spawn()
@@ -205,7 +205,7 @@ function activate32x24()
 	if active == false then
 		-- Creates a screen instance, sets its dimensions and spawns it
 		_screen = screen:new()
-		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.create(0, 0.05, 5)
+		_screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 		_screen.sizeH = 32
 		_screen.sizeV = 24
 		_screen:spawn()
