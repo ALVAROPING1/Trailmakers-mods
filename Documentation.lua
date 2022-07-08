@@ -293,7 +293,7 @@ tm.playerUI = {}
 
 --- Add a button to the clients mod UI
 ---@param playerId integer
----@param id string
+---@param id string | integer | number | boolean
 ---@param defaultValue string
 ---@param callback function Function to execute (executed with a `CallbackData` object as parameter)
 ---@param data any
@@ -303,7 +303,7 @@ function tm.playerUI.AddUIButton(playerId, id, defaultValue, callback, data) end
 
 --- Add a text field to the clients mod UI
 ---@param playerId integer
----@param id string
+---@param id string | integer | number | boolean
 ---@param defaultValue string
 ---@param callback function Function to execute (executed with a `CallbackData` object as parameter)
 ---@param data any
@@ -313,7 +313,7 @@ function tm.playerUI.AddUIText(playerId, id, defaultValue, callback, data) end
 
 --- Add a label to the clients mod UI
 ---@param playerId integer
----@param id string
+---@param id string | integer | number | boolean
 ---@param defaultValue string
 ---@return nil
 function tm.playerUI.AddUILabel(playerId, id, defaultValue) end
@@ -321,7 +321,7 @@ function tm.playerUI.AddUILabel(playerId, id, defaultValue) end
 
 --- Set the value of a clients ui element
 ---@param playerId integer
----@param id string
+---@param id string | integer | number | boolean
 ---@param value string
 ---@return nil
 function tm.playerUI.SetUIValue(playerId, id, value) end
