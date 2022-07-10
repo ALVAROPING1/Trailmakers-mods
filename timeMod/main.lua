@@ -114,7 +114,7 @@ end
 function onSetTimeSpeed(callbackData)
 	local _timeSpeed = tonumber(callbackData.value)
 
-	if timeSpeed ~= nil then
+	if _timeSpeed ~= nil then
 		---@type number
 		---@diagnostic disable-next-line: assign-type-mismatch # We already checked that _timeSpeed is not nil
 		timeSpeed = _timeSpeed
