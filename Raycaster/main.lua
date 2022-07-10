@@ -121,9 +121,11 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---@class Raycaster
 raycaster = {
-	map = {
-		map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
-		playerPosition = {x = 3, y = 3}
+	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+	player = {
+		position = {x = 1, y = 1},
+		angle = math.rad(40),
+		fov = math.rad(70)
 	},
 	screen = screen:new({
 		sizeH = horizontalSize,
@@ -147,7 +149,6 @@ end
 ---
 ---@return nil
 function raycaster:spawn()
-	--- Defines the position of the bottom left corner of the screen
 	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 	self.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 	self.screen:spawn()
@@ -157,7 +158,62 @@ end
 ---
 ---@return nil
 function raycaster:update()
+	for i = -2, 2, 1 do
+		raycaster:castRay(self.player.angle + self.player.fov * i / 4)
+	end
 end
+
+---@param angle number
+---@return nil
+function raycaster:castRay(angle)
+	tm.os.Log("Tracing ray at angle=" .. math.deg(angle))
+	local intersectH_X = self.player.position.x + ( 1 - self.player.position.y % 1) / math.tan(angle)
+	local intersectH_Y = math.floor(self.player.position.y) + 1
+	local intersectV_X = math.floor(self.player.position.x) + 1
+	local intersectV_Y = self.player.position.y + ( 1 - self.player.position.x % 1) * math.tan(angle)
+	local stepX = 1 / math.tan(angle)
+	local stepY = math.tan(angle)
+	local tileStepX = 1
+	local tileStepY = 1
+	local hitWall = false
+
+	local distance
+
+	while not hitWall do
+		while intersectV_Y < intersectH_Y do
+			tm.os.Log("Intersection vertical grid line at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
+			if self.map[intersectV_X + 1][math.floor(intersectV_Y) + 1] == 1 then
+				tm.os.Log("Wall detected")
+				hitWall = true
+				distance = self:hitWall(intersectV_X, intersectV_Y)
+				break
+			else
+				intersectV_X = intersectV_X + tileStepX
+				intersectV_Y = intersectV_Y + stepY
+			end
+		end
+		while intersectH_X < intersectV_X do
+			tm.os.Log("Intersection horizontal grid line at X=" .. intersectH_X .. ", Y=" .. intersectH_Y)
+			if self.map[math.floor(intersectH_X) + 1][intersectH_Y + 1] == 1 then
+				tm.os.Log("Wall detected")
+				hitWall = true
+				distance = self:hitWall(intersectH_X, intersectH_Y)
+				break
+			else
+				intersectH_X = intersectH_X + stepX
+				intersectH_Y = intersectH_Y + tileStepY
+			end
+		end
+	end
+end
+
+---@param positionX number
+---@param positionY number
+---@return number
+function raycaster:hitWall(positionX, positionY)
+	return 0
+end
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Initialization
@@ -169,3 +225,6 @@ tm.physics.AddMesh("cube.obj", "cubeObj")
 -- Screen resolution
 horizontalSize = 48
 verticalSize = 36
+
+_raycaster = raycaster:new()
+_raycaster:update()
