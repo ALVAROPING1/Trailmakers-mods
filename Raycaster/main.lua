@@ -124,7 +124,7 @@ raycaster = {
 	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
 	player = {
 		position = {x = 1, y = 1},
-		angle = math.rad(40),
+		angle = math.rad(45),
 		fov = math.rad(70)
 	},
 	screen = screen:new({
@@ -180,7 +180,7 @@ function raycaster:castRay(angle)
 	local distance
 
 	while not hitWall do
-		while intersectV_Y < intersectH_Y do
+		while intersectV_Y <= intersectH_Y do
 			tm.os.Log("Intersection vertical grid line at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
 			if self.map[intersectV_X + 1][math.floor(intersectV_Y) + 1] == 1 then
 				tm.os.Log("Wall detected")
