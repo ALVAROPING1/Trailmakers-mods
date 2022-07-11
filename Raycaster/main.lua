@@ -123,9 +123,9 @@ end
 raycaster = {
 	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
 	player = {
-		position = {x = 1, y = 1},
+		position = {x = 2.5, y = 2.5},
 		angle = math.rad(45),
-		fov = math.rad(70)
+		fov = math.rad(90)
 	},
 	screen = screen:new({collision = false})
 }
@@ -166,42 +166,61 @@ end
 ---@param angleOffset number
 ---@return {[1]: number, [2]: integer}
 function raycaster:_castRay(angleOffset)
-	local rayAngle = self.player.angle + angleOffset
-	tm.os.Log("Tracing ray at angle=" .. math.deg(rayAngle))
-	local intersectH_X = self.player.position.x + ( 1 - self.player.position.y % 1) / math.tan(rayAngle)
+	local rayAngle = (self.player.angle + angleOffset) % (math.pi * 2)
+	--tm.os.Log("Tracing ray at angle=" .. math.deg(rayAngle))
+
+	local deltaY = 1 - self.player.position.y % 1
+	local deltaX = 1 - self.player.position.x % 1
 	local intersectH_Y = math.floor(self.player.position.y) + 1
 	local intersectV_X = math.floor(self.player.position.x) + 1
-	local intersectV_Y = self.player.position.y + ( 1 - self.player.position.x % 1) * math.tan(rayAngle)
-	local stepX = 1 / math.tan(rayAngle)
-	local stepY = math.tan(rayAngle)
 	local tileStepX = 1
 	local tileStepY = 1
+
+
+	local rayDown = rayAngle > math.rad(180)
+	local rayLeft = rayAngle > math.rad(90) and rayAngle < math.rad(270)
+
+	if rayDown then
+		deltaY = deltaY - 1
+		intersectH_Y = intersectH_Y - 1
+		tileStepY = -1
+	end
+	if rayLeft then
+		deltaX = deltaX - 1
+		intersectV_X = intersectV_X - 1
+		tileStepX = -1
+	end
+
+	local intersectH_X = self.player.position.x + deltaY / math.tan(rayAngle)
+	local intersectV_Y = self.player.position.y + deltaX * math.tan(rayAngle)
+	local stepX = tileStepY / math.tan(rayAngle)
+	local stepY = tileStepX * math.tan(rayAngle)
 	local hitWall = false
 
 	local distance
 	local orientation
 
 	while not hitWall do
-		while intersectV_Y <= intersectH_Y do
-			tm.os.Log("Intersection vertical grid line at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
-			if self.map[intersectV_X + 1][math.floor(intersectV_Y) + 1] == 1 then
-				tm.os.Log("Wall detected")
+		while (rayDown and intersectV_Y >= intersectH_Y) or (not rayDown and intersectV_Y <= intersectH_Y) do
+			--tm.os.Log("Intersection vertical grid line at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
+			if self.map[rayLeft and intersectV_X or intersectV_X + 1][math.floor(intersectV_Y) + 1] == 1 then
+				--tm.os.Log("Wall detected")
 				hitWall = true
-				distance = self:_hitWall(intersectV_X, intersectV_Y, angleOffset)
-				orientation = 1
+				distance = self:_hitWall(intersectV_X, intersectV_Y)
+				orientation = 2
 				break
 			else
 				intersectV_X = intersectV_X + tileStepX
 				intersectV_Y = intersectV_Y + stepY
 			end
 		end
-		while intersectH_X < intersectV_X do
-			tm.os.Log("Intersection horizontal grid line at X=" .. intersectH_X .. ", Y=" .. intersectH_Y)
-			if self.map[math.floor(intersectH_X) + 1][intersectH_Y + 1] == 1 then
-				tm.os.Log("Wall detected")
+		while (rayLeft and intersectH_X > intersectV_X) or (not rayLeft and intersectH_X < intersectV_X) do
+			--tm.os.Log("Intersection horizontal grid line at X=" .. intersectH_X .. ", Y=" .. intersectH_Y)
+			if self.map[math.floor(intersectH_X) + 1][rayDown and intersectH_Y or intersectH_Y + 1] == 1 then
+				--tm.os.Log("Wall detected")
 				hitWall = true
-				distance = self:_hitWall(intersectH_X, intersectH_Y, angleOffset)
-				orientation = 2
+				distance = self:_hitWall(intersectH_X, intersectH_Y)
+				orientation = rayLeft and 3 or 3
 				break
 			else
 				intersectH_X = intersectH_X + stepX
@@ -215,27 +234,26 @@ end
 
 ---@param positionX number
 ---@param positionY number
----@param angleOffset number
 ---@return number
-function raycaster:_hitWall(positionX, positionY, angleOffset)
-	return (positionX - self.player.position.x) * math.cos(angleOffset) + (positionY - self.player.position.y) * math.sin(angleOffset)
+function raycaster:_hitWall(positionX, positionY)
+	return (positionX - self.player.position.x) * math.cos(self.player.angle) + (positionY - self.player.position.y) * math.sin(self.player.angle)
 end
 
 ---@param rays {[integer]: {[1]: number, [2]: integer}}
 ---@return nil
 function raycaster:_drawScreen(rays)
 	local nextFrame = {}
-	local wallScallingFactor = 40 -- 75 for 80x60, 40 for 48x36
+	local wallScallingFactor = 15 -- 75 for 80x60, 40 for 48x36
 	for positionH = 0, self.screen.sizeH - 1 do
 		nextFrame[positionH] = {}
 		local wallHeight = wallScallingFactor / rays[positionH + 1][1]
 		for positionV = 0, self.screen.sizeV - 1 do
 			if positionV < (self.screen.sizeV - wallHeight) / 2 then
-				nextFrame[positionH][positionV] = 4
+				nextFrame[positionH][positionV] = 5
 			elseif positionV < (self.screen.sizeV - wallHeight) / 2 + wallHeight then
 				nextFrame[positionH][positionV] = rays[positionH + 1][2]
 			else
-				nextFrame[positionH][positionV] = 3
+				nextFrame[positionH][positionV] = 4
 			end
 		end
 	end
@@ -260,3 +278,17 @@ _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
 _raycaster:spawn()
 _raycaster:update()
+
+value = 5
+
+function increaseAngle()
+	_raycaster.player.angle = _raycaster.player.angle + math.rad(value)
+	_raycaster:update()
+end
+
+function changeValue(callbackData)
+	value = tonumber(callbackData.value)
+end
+
+tm.playerUI.AddUIText(0, 1, "5", changeValue)
+tm.input.RegisterFunctionToKeyDownCallback(0, "increaseAngle", "n")
