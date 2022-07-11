@@ -127,11 +127,7 @@ raycaster = {
 		angle = math.rad(45),
 		fov = math.rad(70)
 	},
-	screen = screen:new({
-		sizeH = horizontalSize,
-		sizeV = verticalSize,
-		collision = false,
-	})
+	screen = screen:new({collision = false})
 }
 
 --- Function defining how to create a new instance from the prototype
@@ -158,26 +154,39 @@ end
 ---
 ---@return nil
 function raycaster:update()
-	for i = -2, 2, 1 do
-		raycaster:castRay(self.player.angle + self.player.fov * i / 4)
+	local rays = {}
+	local maxAngleOffsetMultiplier = self.screen.sizeH / 2
+
+	for i = -maxAngleOffsetMultiplier, -1 do
+		rays[i + maxAngleOffsetMultiplier] = {}
+		rays[i + maxAngleOffsetMultiplier][0], rays[i + maxAngleOffsetMultiplier][1] = self:_castRay(self.player.fov * i / (2 * maxAngleOffsetMultiplier))
 	end
+	for i = 1, maxAngleOffsetMultiplier do
+		rays[i + maxAngleOffsetMultiplier - 1] = {}
+		rays[i + maxAngleOffsetMultiplier - 1][0], rays[i + maxAngleOffsetMultiplier - 1][1] = self:_castRay(self.player.fov * i / (2 * maxAngleOffsetMultiplier))
+	end
+
+	self:_drawScreen(rays)
 end
 
----@param angle number
----@return nil
-function raycaster:castRay(angle)
-	tm.os.Log("Tracing ray at angle=" .. math.deg(angle))
-	local intersectH_X = self.player.position.x + ( 1 - self.player.position.y % 1) / math.tan(angle)
+---@param angleOffset number
+---@return number distance
+---@return integer orientation
+function raycaster:_castRay(angleOffset)
+	local rayAngle = self.player.angle + angleOffset
+	tm.os.Log("Tracing ray at angle=" .. math.deg(rayAngle))
+	local intersectH_X = self.player.position.x + ( 1 - self.player.position.y % 1) / math.tan(rayAngle)
 	local intersectH_Y = math.floor(self.player.position.y) + 1
 	local intersectV_X = math.floor(self.player.position.x) + 1
-	local intersectV_Y = self.player.position.y + ( 1 - self.player.position.x % 1) * math.tan(angle)
-	local stepX = 1 / math.tan(angle)
-	local stepY = math.tan(angle)
+	local intersectV_Y = self.player.position.y + ( 1 - self.player.position.x % 1) * math.tan(rayAngle)
+	local stepX = 1 / math.tan(rayAngle)
+	local stepY = math.tan(rayAngle)
 	local tileStepX = 1
 	local tileStepY = 1
 	local hitWall = false
 
 	local distance
+	local orientation
 
 	while not hitWall do
 		while intersectV_Y <= intersectH_Y do
@@ -185,7 +194,8 @@ function raycaster:castRay(angle)
 			if self.map[intersectV_X + 1][math.floor(intersectV_Y) + 1] == 1 then
 				tm.os.Log("Wall detected")
 				hitWall = true
-				distance = self:hitWall(intersectV_X, intersectV_Y)
+				distance = self:_hitWall(intersectV_X, intersectV_Y, angleOffset)
+				orientation = 1
 				break
 			else
 				intersectV_X = intersectV_X + tileStepX
@@ -197,7 +207,8 @@ function raycaster:castRay(angle)
 			if self.map[math.floor(intersectH_X) + 1][intersectH_Y + 1] == 1 then
 				tm.os.Log("Wall detected")
 				hitWall = true
-				distance = self:hitWall(intersectH_X, intersectH_Y)
+				distance = self:_hitWall(intersectH_X, intersectH_Y, angleOffset)
+				orientation = 2
 				break
 			else
 				intersectH_X = intersectH_X + stepX
@@ -205,13 +216,38 @@ function raycaster:castRay(angle)
 			end
 		end
 	end
+
+	return distance, orientation
 end
 
 ---@param positionX number
 ---@param positionY number
+---@param angleOffset number
 ---@return number
-function raycaster:hitWall(positionX, positionY)
-	return 0
+function raycaster:_hitWall(positionX, positionY, angleOffset)
+	return (positionX - self.player.position.x) * math.cos(angleOffset) + (positionY - self.player.position.y) * math.sin(angleOffset)
+end
+
+---@param rays {[integer]: {[0]: number, [1]: integer}}
+---@return nil
+function raycaster:_drawScreen(rays)
+	local nextFrame = {}
+	local wallScallingFactor = 40 -- 75 for 80x60
+	for positionH = 0, self.screen.sizeH - 1 do
+		nextFrame[positionH] = {}
+		local wallHeight = wallScallingFactor / rays[positionH][0]
+		for positionV = 0, self.screen.sizeV - 1 do
+			if positionV < (self.screen.sizeV - wallHeight) / 2 then
+				nextFrame[positionH][positionV] = 4
+			elseif positionV < (self.screen.sizeV - wallHeight) / 2 + wallHeight then
+				nextFrame[positionH][positionV] = rays[positionH][1]
+			else
+				nextFrame[positionH][positionV] = 3
+			end
+		end
+	end
+	self.screen:setNextFrameDelta(nextFrame)
+	self.screen:update()
 end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -223,8 +259,11 @@ tm.physics.AddTexture("cube.png", "cubePng")
 tm.physics.AddMesh("cube.obj", "cubeObj")
 
 -- Screen resolution
-horizontalSize = 48
-verticalSize = 36
+horizontalSize = 48 -- 80
+verticalSize = 36 -- 60
 
 _raycaster = raycaster:new()
+_raycaster.screen.sizeH = horizontalSize
+_raycaster.screen.sizeV = verticalSize
+_raycaster:spawn()
 _raycaster:update()
