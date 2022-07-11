@@ -155,23 +155,16 @@ end
 ---@return nil
 function raycaster:update()
 	local rays = {}
-	local maxAngleOffsetMultiplier = self.screen.sizeH / 2
 
-	for i = -maxAngleOffsetMultiplier, -1 do
-		rays[i + maxAngleOffsetMultiplier] = {}
-		rays[i + maxAngleOffsetMultiplier][0], rays[i + maxAngleOffsetMultiplier][1] = self:_castRay(self.player.fov * i / (2 * maxAngleOffsetMultiplier))
-	end
-	for i = 1, maxAngleOffsetMultiplier do
-		rays[i + maxAngleOffsetMultiplier - 1] = {}
-		rays[i + maxAngleOffsetMultiplier - 1][0], rays[i + maxAngleOffsetMultiplier - 1][1] = self:_castRay(self.player.fov * i / (2 * maxAngleOffsetMultiplier))
+	for i = 0, self.screen.sizeH - 1 do
+		table.insert(rays, self:_castRay(self.player.fov * (-1/2 + 1 / (2 * self.screen.sizeH) + i / self.screen.sizeH)))
 	end
 
 	self:_drawScreen(rays)
 end
 
 ---@param angleOffset number
----@return number distance
----@return integer orientation
+---@return {[1]: number, [2]: integer}
 function raycaster:_castRay(angleOffset)
 	local rayAngle = self.player.angle + angleOffset
 	tm.os.Log("Tracing ray at angle=" .. math.deg(rayAngle))
@@ -217,7 +210,7 @@ function raycaster:_castRay(angleOffset)
 		end
 	end
 
-	return distance, orientation
+	return {distance, orientation}
 end
 
 ---@param positionX number
@@ -228,19 +221,19 @@ function raycaster:_hitWall(positionX, positionY, angleOffset)
 	return (positionX - self.player.position.x) * math.cos(angleOffset) + (positionY - self.player.position.y) * math.sin(angleOffset)
 end
 
----@param rays {[integer]: {[0]: number, [1]: integer}}
+---@param rays {[integer]: {[1]: number, [2]: integer}}
 ---@return nil
 function raycaster:_drawScreen(rays)
 	local nextFrame = {}
-	local wallScallingFactor = 40 -- 75 for 80x60
+	local wallScallingFactor = 40 -- 75 for 80x60, 40 for 48x36
 	for positionH = 0, self.screen.sizeH - 1 do
 		nextFrame[positionH] = {}
-		local wallHeight = wallScallingFactor / rays[positionH][0]
+		local wallHeight = wallScallingFactor / rays[positionH + 1][1]
 		for positionV = 0, self.screen.sizeV - 1 do
 			if positionV < (self.screen.sizeV - wallHeight) / 2 then
 				nextFrame[positionH][positionV] = 4
 			elseif positionV < (self.screen.sizeV - wallHeight) / 2 + wallHeight then
-				nextFrame[positionH][positionV] = rays[positionH][1]
+				nextFrame[positionH][positionV] = rays[positionH + 1][2]
 			else
 				nextFrame[positionH][positionV] = 3
 			end
@@ -259,8 +252,8 @@ tm.physics.AddTexture("cube.png", "cubePng")
 tm.physics.AddMesh("cube.obj", "cubeObj")
 
 -- Screen resolution
-horizontalSize = 48 -- 80
-verticalSize = 36 -- 60
+horizontalSize = 48 -- 80, 48
+verticalSize = 36 -- 60, 36
 
 _raycaster = raycaster:new()
 _raycaster.screen.sizeH = horizontalSize
