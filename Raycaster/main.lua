@@ -208,7 +208,6 @@ function raycaster:_castRay(angleOffset)
 				--tm.os.Log("Vertical wall detected at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
 				hitWall = true
 				distance = self:_hitWall(intersectV_X, intersectV_Y)
-				--tm.os.Log(distance)
 				orientation = 2
 				break
 			else
@@ -222,7 +221,7 @@ function raycaster:_castRay(angleOffset)
 				--tm.os.Log("Horizontal wall detected at X=" .. intersectH_X .. ", Y=" .. intersectH_Y)
 				hitWall = true
 				distance = self:_hitWall(intersectH_X, intersectH_Y)
-				orientation = rayLeft and 3 or 3
+				orientation = rayDown and 1 or 3
 				break
 			else
 				intersectH_X = intersectH_X + stepX
@@ -231,6 +230,7 @@ function raycaster:_castRay(angleOffset)
 		end
 	end
 
+	--tm.os.Log("---Distance=" .. distance .. ", orientation=" .. orientation)
 	return {distance, orientation}
 end
 
