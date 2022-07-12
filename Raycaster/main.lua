@@ -154,6 +154,7 @@ end
 ---
 ---@return nil
 function raycaster:update()
+	--tm.os.Log("-----------------------------------------------------------------------------------------------------------------------------------------------")
 	local rays = {}
 
 	for i = 0, self.screen.sizeH - 1 do
@@ -204,9 +205,10 @@ function raycaster:_castRay(angleOffset)
 		while (rayDown and intersectV_Y >= intersectH_Y) or (not rayDown and intersectV_Y <= intersectH_Y) do
 			--tm.os.Log("Intersection vertical grid line at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
 			if self.map[rayLeft and intersectV_X or intersectV_X + 1][math.floor(intersectV_Y) + 1] == 1 then
-				--tm.os.Log("Wall detected")
+				--tm.os.Log("Vertical wall detected at X=" .. intersectV_X .. ", Y=" .. intersectV_Y)
 				hitWall = true
 				distance = self:_hitWall(intersectV_X, intersectV_Y)
+				--tm.os.Log(distance)
 				orientation = 2
 				break
 			else
@@ -217,7 +219,7 @@ function raycaster:_castRay(angleOffset)
 		while (rayLeft and intersectH_X > intersectV_X) or (not rayLeft and intersectH_X < intersectV_X) do
 			--tm.os.Log("Intersection horizontal grid line at X=" .. intersectH_X .. ", Y=" .. intersectH_Y)
 			if self.map[math.floor(intersectH_X) + 1][rayDown and intersectH_Y or intersectH_Y + 1] == 1 then
-				--tm.os.Log("Wall detected")
+				--tm.os.Log("Horizontal wall detected at X=" .. intersectH_X .. ", Y=" .. intersectH_Y)
 				hitWall = true
 				distance = self:_hitWall(intersectH_X, intersectH_Y)
 				orientation = rayLeft and 3 or 3
@@ -236,24 +238,33 @@ end
 ---@param positionY number
 ---@return number
 function raycaster:_hitWall(positionX, positionY)
-	return (positionX - self.player.position.x) * math.cos(self.player.angle) + (positionY - self.player.position.y) * math.sin(self.player.angle)
+	local rawDistance = (positionX - self.player.position.x) * math.cos(self.player.angle) + (positionY - self.player.position.y) * math.sin(self.player.angle)
+	--- Rounds the number to prevent float precision errors
+	---@diagnostic disable-next-line: return-type-mismatch #rawDistance will always be a number
+	return tonumber(string.format("%.10f", rawDistance))
 end
 
 ---@param rays {[integer]: {[1]: number, [2]: integer}}
 ---@return nil
 function raycaster:_drawScreen(rays)
+	--tm.os.Log("--------- Draw ----------------------------------------------------------------------------------")
 	local nextFrame = {}
 	local wallScallingFactor = 15 -- 75 for 80x60, 40 for 48x36
 	for positionH = 0, self.screen.sizeH - 1 do
 		nextFrame[positionH] = {}
 		local wallHeight = wallScallingFactor / rays[positionH + 1][1]
+		--tm.os.Log("Column=" .. positionH .. ", Height=" .. wallHeight)
+		--tm.os.Log("0<" .. (self.screen.sizeV - wallHeight) / 2 .. "<" .. (self.screen.sizeV - wallHeight) / 2 + wallHeight .. "<infty")
 		for positionV = 0, self.screen.sizeV - 1 do
 			if positionV < (self.screen.sizeV - wallHeight) / 2 then
 				nextFrame[positionH][positionV] = 5
+				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", sky")
 			elseif positionV < (self.screen.sizeV - wallHeight) / 2 + wallHeight then
 				nextFrame[positionH][positionV] = rays[positionH + 1][2]
+				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", wall")
 			else
 				nextFrame[positionH][positionV] = 4
+				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", floor")
 			end
 		end
 	end
@@ -281,14 +292,23 @@ _raycaster:update()
 
 value = 5
 
-function increaseAngle()
+function increaseAngleRight()
 	_raycaster.player.angle = _raycaster.player.angle + math.rad(value)
 	_raycaster:update()
+	tm.playerUI.SetUIValue(0, 1, "Angle: " .. math.deg(_raycaster.player.angle))
+end
+
+function increaseAngleLeft()
+	_raycaster.player.angle = _raycaster.player.angle - math.rad(value)
+	_raycaster:update()
+	tm.playerUI.SetUIValue(0, 1, "Angle: " .. math.deg(_raycaster.player.angle))
 end
 
 function changeValue(callbackData)
 	value = tonumber(callbackData.value)
 end
 
-tm.playerUI.AddUIText(0, 1, "5", changeValue)
-tm.input.RegisterFunctionToKeyDownCallback(0, "increaseAngle", "n")
+tm.playerUI.AddUIText(0, 0, "5", changeValue)
+tm.playerUI.AddUILabel(0, 1, "Angle: " .. math.deg(_raycaster.player.angle))
+tm.input.RegisterFunctionToKeyDownCallback(0, "increaseAngleLeft", "left")
+tm.input.RegisterFunctionToKeyDownCallback(0, "increaseAngleRight", "right")
