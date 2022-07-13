@@ -127,7 +127,7 @@ raycaster = {
 		angle = math.rad(45),
 		fov = math.rad(90)
 	},
-	_wallScallingFactor = 25, -- 75,25 for 80x60, 40,15 for 48x36
+	_wallScallingFactor = 15,
 	screen = screen:new({collision = false})
 }
 
@@ -157,6 +157,9 @@ end
 ---@return nil
 function raycaster:update()
 	--tm.os.Log("-----------------------------------------------------------------------------------------------------------------------------------------------")
+
+	-- Simplifies the angle of the player
+	self.player.angle = self.player.angle % (math.pi * 2)
 
 	-- Table with the distance and position returned by each casted ray
 	local rays = {}
@@ -330,9 +333,42 @@ function raycaster:_drawScreen(rays)
 	self.screen:update()
 end
 
+--- Moves the player by the given absolute coordinates
+---
+---@param x number
+---@param y number
+---@return nil
+function raycaster:movePlayerAbsolute(x, y)
+	self.player.position.x = self.player.position.x + x
+	self.player.position.y = self.player.position.y + y
+end
+
+--- Moves the player by the given coordinates relative to its facing direction
+---
+---@param x number
+---@param y number
+---@return nil
+function raycaster:movePlayerRelative(x, y)
+	local cosAngle = math.cos(self.player.angle)
+	local sinAngle = math.sin(self.player.angle)
+	local absoluteX = x * cosAngle - y * sinAngle
+	local absoluteY = x * sinAngle + y * cosAngle
+	self:movePlayerAbsolute(absoluteX, absoluteY)
+end
+
+--- Rotates the player by the given angle in degrees
+function raycaster:rotatePlayer(angle)
+	self.player.angle = self.player.angle + math.rad(angle)
+end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+function update()
+	_raycaster:update()
+end
+
+---------------------------------------------------------------------------------------------
 -- Initialization
+---------------------------------------------------------------------------------------------
 
 -- Loads the object and the texture
 tm.physics.AddTexture("cube.png", "cubePng")
@@ -342,31 +378,57 @@ tm.physics.AddMesh("cube.obj", "cubeObj")
 horizontalSize = 48 -- 80, 48
 verticalSize = 36 -- 60, 36
 
+-- Wall size
+wallScallingFactor = 15 -- 75,25 for 80x60, 40,15 for 48x36
+
+-- Keybinds
+keybinds = { -- Contains all the keybinds used
+	moveLeft = "J",
+	moveRight = "L",
+	moveForwards = "I",
+	moveBackwards = "K",
+	rotateLeft = "U",
+	rotateRight = "O"
+}
+
+-- Update speed
+tm.os.SetModTargetDeltaTime(1/15)
+
 _raycaster = raycaster:new()
 _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
+_raycaster._wallScallingFactor = wallScallingFactor
 _raycaster:spawn()
-_raycaster:update()
 
-value = 5
 
-function increaseAngleRight()
-	_raycaster.player.angle = _raycaster.player.angle + math.rad(value)
-	_raycaster:update()
-	tm.playerUI.SetUIValue(0, 1, "Angle: " .. math.deg(_raycaster.player.angle))
+function moveRight()
+	_raycaster:movePlayerRelative(0, 0.1)
+end
+function moveLeft()
+	_raycaster:movePlayerRelative(0, -0.1)
+end
+function moveForwards()
+	_raycaster:movePlayerRelative(0.1, 0)
+end
+function moveBackwards()
+	_raycaster:movePlayerRelative(-0.1, 0)
 end
 
-function increaseAngleLeft()
-	_raycaster.player.angle = _raycaster.player.angle - math.rad(value)
-	_raycaster:update()
-	tm.playerUI.SetUIValue(0, 1, "Angle: " .. math.deg(_raycaster.player.angle))
+function rotateRight()
+	_raycaster:rotatePlayer(2)
+end
+function rotateLeft()
+	_raycaster:rotatePlayer(-2)
 end
 
-function changeValue(callbackData)
-	value = tonumber(callbackData.value)
+
+function onPlayerJoined()
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveRight", keybinds.moveRight)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveLeft", keybinds.moveLeft)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveForwards", keybinds.moveForwards)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveBackwards", keybinds.moveBackwards)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateRight", keybinds.rotateRight)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateLeft", keybinds.rotateLeft)
 end
 
-tm.playerUI.AddUIText(0, 0, "5", changeValue)
-tm.playerUI.AddUILabel(0, 1, "Angle: " .. math.deg(_raycaster.player.angle))
-tm.input.RegisterFunctionToKeyDownCallback(0, "increaseAngleLeft", "left")
-tm.input.RegisterFunctionToKeyDownCallback(0, "increaseAngleRight", "right")
+tm.players.OnPlayerJoined.add(onPlayerJoined)
