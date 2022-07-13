@@ -342,9 +342,9 @@ function raycaster:movePlayerAbsolute(x, y)
 	local nextPositionX = self.player.position.x + x
 	local nextPositionY = self.player.position.y + y
 	-- Checks that the next position is an empty tile
-	tm.os.Log("check collision")
-	if self.map[math.floor(nextPositionX + 0.1) + 1][math.floor(nextPositionY + 0.1) + 1] == 0 then
-		tm.os.Log("no collision")
+	--tm.os.Log("check collision")
+	if self.map[math.floor(nextPositionX + (x>0 and 1 or -1) * 0.1) + 1][math.floor(nextPositionY + (y>0 and 1 or -1) * 0.1) + 1] == 0 then
+		--tm.os.Log("no collision")
 		self.player.position.x = nextPositionX
 		self.player.position.y = nextPositionY
 	end
