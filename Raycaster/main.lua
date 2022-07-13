@@ -370,11 +370,82 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function update()
+	updatePlayerPosition()
 	_raycaster:update()
 	tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
 	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
 	tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
 	tm.playerUI.SetUIValue(0, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
+end
+
+---------------------------------------------------------------------------------------------
+-- Controls
+---------------------------------------------------------------------------------------------
+
+function updatePlayerPosition()
+	local x = 0
+	local y = 0
+	local angle = 0
+	local moveDistance = 0.03
+	local RotateAngle = 1.2
+
+	if controls.moveLeft then y = y - moveDistance end
+	if controls.moveRight then y = y + moveDistance end
+	if controls.moveForwards then x = x + moveDistance end
+	if controls.moveBackwards then x = x - moveDistance end
+
+	if controls.rotateLeft then angle = angle - RotateAngle end
+	if controls.rotateRight then angle = angle + RotateAngle end
+
+	_raycaster:movePlayerRelative(x, y)
+	_raycaster:rotatePlayer(angle)
+end
+
+controls = {
+	moveLeft = false,
+	moveRight = false,
+	moveForwards = false,
+	moveBackwards = false,
+	rotateRight = false,
+	rotateLeft = false
+}
+
+function moveLeftDown()
+	controls.moveLeft = true
+end
+function moveLeftUp()
+	controls.moveLeft = false
+end
+function moveRightDown()
+	controls.moveRight = true
+end
+function moveRightUp()
+	controls.moveRight = false
+end
+function moveForwardsDown()
+	controls.moveForwards = true
+end
+function moveForwardsUp()
+	controls.moveForwards = false
+end
+function moveBackwardsDown()
+	controls.moveBackwards = true
+end
+function moveBackwardsUp()
+	controls.moveBackwards = false
+end
+
+function rotateLeftDown()
+	controls.rotateLeft = true
+end
+function rotateLeftUp()
+	controls.rotateLeft = false
+end
+function rotateRightDown()
+	controls.rotateRight = true
+end
+function rotateRightUp()
+	controls.rotateRight = false
 end
 
 ---------------------------------------------------------------------------------------------
@@ -412,34 +483,19 @@ _raycaster._wallScallingFactor = wallScallingFactor
 _raycaster:spawn()
 
 
-function moveRight()
-	_raycaster:movePlayerRelative(0, 0.1)
-end
-function moveLeft()
-	_raycaster:movePlayerRelative(0, -0.1)
-end
-function moveForwards()
-	_raycaster:movePlayerRelative(0.1, 0)
-end
-function moveBackwards()
-	_raycaster:movePlayerRelative(-0.1, 0)
-end
-
-function rotateRight()
-	_raycaster:rotatePlayer(2)
-end
-function rotateLeft()
-	_raycaster:rotatePlayer(-2)
-end
-
-
 function onPlayerJoined()
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveRight", keybinds.moveRight)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveLeft", keybinds.moveLeft)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveForwards", keybinds.moveForwards)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveBackwards", keybinds.moveBackwards)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateRight", keybinds.rotateRight)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateLeft", keybinds.rotateLeft)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveRightDown", keybinds.moveRight)
+	tm.input.RegisterFunctionToKeyUpCallback(0, "moveRightUp", keybinds.moveRight)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveLeftDown", keybinds.moveLeft)
+	tm.input.RegisterFunctionToKeyUpCallback(0, "moveLeftUp", keybinds.moveLeft)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveForwardsDown", keybinds.moveForwards)
+	tm.input.RegisterFunctionToKeyUpCallback(0, "moveForwardsUp", keybinds.moveForwards)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "moveBackwardsDown", keybinds.moveBackwards)
+	tm.input.RegisterFunctionToKeyUpCallback(0, "moveBackwardsUp", keybinds.moveBackwards)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateRightDown", keybinds.rotateRight)
+	tm.input.RegisterFunctionToKeyUpCallback(0, "rotateRightUp", keybinds.rotateRight)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateLeftDown", keybinds.rotateLeft)
+	tm.input.RegisterFunctionToKeyUpCallback(0, "rotateLeftUp", keybinds.rotateLeft)
 	tm.playerUI.AddUILabel(0, 0, "Angle: ")
 	tm.playerUI.AddUILabel(0, 1, "Position:")
 	tm.playerUI.AddUILabel(0, 2, "X=")
