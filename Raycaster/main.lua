@@ -339,8 +339,15 @@ end
 ---@param y number
 ---@return nil
 function raycaster:movePlayerAbsolute(x, y)
-	self.player.position.x = self.player.position.x + x
-	self.player.position.y = self.player.position.y + y
+	local nextPositionX = self.player.position.x + x
+	local nextPositionY = self.player.position.y + y
+	-- Checks that the next position is an empty tile
+	tm.os.Log("check collision")
+	if self.map[math.floor(nextPositionX + 0.1) + 1][math.floor(nextPositionY + 0.1) + 1] == 0 then
+		tm.os.Log("no collision")
+		self.player.position.x = nextPositionX
+		self.player.position.y = nextPositionY
+	end
 end
 
 --- Moves the player by the given coordinates relative to its facing direction
@@ -364,6 +371,10 @@ end
 
 function update()
 	_raycaster:update()
+	tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
+	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
+	tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
+	tm.playerUI.SetUIValue(0, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
 end
 
 ---------------------------------------------------------------------------------------------
@@ -429,6 +440,11 @@ function onPlayerJoined()
 	tm.input.RegisterFunctionToKeyDownCallback(0, "moveBackwards", keybinds.moveBackwards)
 	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateRight", keybinds.rotateRight)
 	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateLeft", keybinds.rotateLeft)
+	tm.playerUI.AddUILabel(0, 0, "Angle: ")
+	tm.playerUI.AddUILabel(0, 1, "Position:")
+	tm.playerUI.AddUILabel(0, 2, "X=")
+	tm.playerUI.AddUILabel(0, 3, "Y=")
+	tm.playerUI.AddUILabel(0, 4, "PositionGrid: ")
 end
 
 tm.players.OnPlayerJoined.add(onPlayerJoined)
