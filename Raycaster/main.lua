@@ -125,7 +125,10 @@ raycaster = {
 	player = {
 		position = {x = 2.5, y = 2.5},
 		angle = math.rad(45),
-		fov = math.rad(90)
+		fov = math.rad(90),
+		_hitboxSize = 0.1,
+		moveStep = 0.03,
+		rotateStep = math.rad(2),
 	},
 	_wallScallingFactor = 15,
 	screen = screen:new({collision = false})
@@ -363,14 +366,38 @@ function raycaster:movePlayerRelative(x, y)
 	self:movePlayerAbsolute(absoluteX, absoluteY)
 end
 
---- Rotates the player by the given angle in degrees
+--- Rotates the player by the given angle in radians
+---
+---@param angle number
+---@return nil
 function raycaster:rotatePlayer(angle)
-	self.player.angle = self.player.angle + math.rad(angle)
+	self.player.angle = self.player.angle + angle
+end
+
+--- Updates the player's position and direction based on the state of the input buttons
+---
+---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
+---@return nil
+function raycaster:updatePlayer(input)
+	local x = 0
+	local y = 0
+	local angle = 0
+
+	if input.moveLeft then y = y - self.player.moveStep end
+	if input.moveRight then y = y + self.player.moveStep end
+	if input.moveForwards then x = x + self.player.moveStep end
+	if input.moveBackwards then x = x - self.player.moveStep end
+
+	if input.rotateLeft then angle = angle - self.player.rotateStep end
+	if input.rotateRight then angle = angle + self.player.rotateStep end
+
+	self:movePlayerRelative(x, y)
+	self:rotatePlayer(angle)
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function update()
-	updatePlayerPosition()
+	_raycaster:updatePlayer(controls)
 	_raycaster:update()
 	tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
 	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
@@ -381,25 +408,6 @@ end
 ---------------------------------------------------------------------------------------------
 -- Controls
 ---------------------------------------------------------------------------------------------
-
-function updatePlayerPosition()
-	local x = 0
-	local y = 0
-	local angle = 0
-	local moveDistance = 0.03
-	local RotateAngle = 1.2
-
-	if controls.moveLeft then y = y - moveDistance end
-	if controls.moveRight then y = y + moveDistance end
-	if controls.moveForwards then x = x + moveDistance end
-	if controls.moveBackwards then x = x - moveDistance end
-
-	if controls.rotateLeft then angle = angle - RotateAngle end
-	if controls.rotateRight then angle = angle + RotateAngle end
-
-	_raycaster:movePlayerRelative(x, y)
-	_raycaster:rotatePlayer(angle)
-end
 
 controls = {
 	moveLeft = false,
