@@ -121,9 +121,9 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ---@class Raycaster
 raycaster = {
-	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,1,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
 	player = {
-		position = {x = 2.5, y = 2.5},
+		position = {x = 1.5, y = 1.5},
 		angle = math.rad(45),
 		fov = math.rad(90),
 		_hitboxSize = 0.1,
@@ -344,12 +344,23 @@ end
 function raycaster:movePlayerAbsolute(x, y)
 	local nextPositionX = self.player.position.x + x
 	local nextPositionY = self.player.position.y + y
+	local direction = math.atan(y, x)
+	local tileX = math.floor(nextPositionX + (x>0 and 1 or -1) * (x~=0 and 1 or 0) * self.player._hitboxSize * math.cos(direction)) + 1
+	local tileY = math.floor(nextPositionY + (y>0 and 1 or -1) * (y~=0 and 1 or 0) * self.player._hitboxSize * math.sin(direction)) + 1
 	-- Checks that the next position is an empty tile
 	--tm.os.Log("check collision")
-	if self.map[math.floor(nextPositionX + (x>0 and 1 or -1) * 0.1) + 1][math.floor(nextPositionY + (y>0 and 1 or -1) * 0.1) + 1] == 0 then
+	if self.map[tileX][tileY] == 0 then
 		--tm.os.Log("no collision")
 		self.player.position.x = nextPositionX
 		self.player.position.y = nextPositionY
+	elseif x ~= 0 and y ~= 0 then
+		if math.abs(x) >= math.abs(y) then
+			self:movePlayerAbsolute(x, 0)
+			self:movePlayerAbsolute(0, y)
+		else
+			self:movePlayerAbsolute(0, y)
+			self:movePlayerAbsolute(x, 0)
+		end
 	end
 end
 
