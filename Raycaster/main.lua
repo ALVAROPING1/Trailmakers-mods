@@ -126,12 +126,12 @@ raycaster = {
 		position = {x = 1.5, y = 1.5},
 		angle = math.rad(45),
 		fov = math.rad(90),
-		_hitboxSize = 0.1,
 		moveStep = 0.03,
 		rotateStep = math.rad(2),
+		_hitboxSize = 0.1,
 	},
-	_wallScallingFactor = 15,
-	screen = screen:new({collision = false})
+	screen = screen:new({collision = false}),
+	_wallScallingFactor = 15
 }
 
 --- Function defining how to create a new instance from the prototype
@@ -345,15 +345,18 @@ function raycaster:movePlayerAbsolute(x, y)
 	local nextPositionX = self.player.position.x + x
 	local nextPositionY = self.player.position.y + y
 	local direction = math.atan(y, x)
-	local tileX = math.floor(nextPositionX + (x>0 and 1 or -1) * (x~=0 and 1 or 0) * self.player._hitboxSize * math.cos(direction)) + 1
-	local tileY = math.floor(nextPositionY + (y>0 and 1 or -1) * (y~=0 and 1 or 0) * self.player._hitboxSize * math.sin(direction)) + 1
-	-- Checks that the next position is an empty tile
+	-- Calculates the tile position the player would be on after being moved with an extra distance in the direction of travel for the hitbox
+	local tileX = math.floor(nextPositionX + (x>0 and 1 or -1) * self.player._hitboxSize * math.cos(direction)) + 1
+	local tileY = math.floor(nextPositionY + (y>0 and 1 or -1) * self.player._hitboxSize * math.sin(direction)) + 1
+	-- Checks that the calculated tile is empty
 	--tm.os.Log("check collision")
 	if self.map[tileX][tileY] == 0 then
+		-- If it is, moves the player
 		--tm.os.Log("no collision")
 		self.player.position.x = nextPositionX
 		self.player.position.y = nextPositionY
 	elseif x ~= 0 and y ~= 0 then
+		-- If it isn't, tries to move the player along the individual axes, trying first in the one in which the player would move the most
 		if math.abs(x) >= math.abs(y) then
 			self:movePlayerAbsolute(x, 0)
 			self:movePlayerAbsolute(0, y)
@@ -372,6 +375,7 @@ end
 function raycaster:movePlayerRelative(x, y)
 	local cosAngle = math.cos(self.player.angle)
 	local sinAngle = math.sin(self.player.angle)
+	-- Applies a change of basis to the input vector to transform it from a base relative to the player to a base relative to the map
 	local absoluteX = x * cosAngle - y * sinAngle
 	local absoluteY = x * sinAngle + y * cosAngle
 	self:movePlayerAbsolute(absoluteX, absoluteY)
