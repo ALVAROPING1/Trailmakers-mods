@@ -157,8 +157,12 @@ end
 
 --- Updates the screen
 ---
+---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
 ---@return nil
-function raycaster:update()
+function raycaster:update(input)
+	-- Updates the player according to the buttons pressed
+	_raycaster:updatePlayer(input)
+
 	--tm.os.Log("-----------------------------------------------------------------------------------------------------------------------------------------------")
 
 	-- Simplifies the angle of the player
@@ -412,8 +416,7 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function update()
-	_raycaster:updatePlayer(controls)
-	_raycaster:update()
+	_raycaster:update(controls)
 	tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
 	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
 	tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
