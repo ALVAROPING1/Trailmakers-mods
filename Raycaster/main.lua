@@ -421,6 +421,7 @@ function update()
 	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
 	tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
 	tm.playerUI.SetUIValue(0, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
+	tm.playerUI.SetUIValue(0, 5, "FOV: " .. math.deg(_raycaster.player.fov))
 end
 
 ---------------------------------------------------------------------------------------------
@@ -474,6 +475,43 @@ function rotateRightUp()
 	controls.rotateRight = false
 end
 
+
+
+function increaseFov()
+	local value = _raycaster.player.fov + math.rad(1)
+	_raycaster.player.fov = value <= math.rad(180) and value or math.rad(180)
+end
+function decreaseFov()
+	local value = _raycaster.player.fov - math.rad(1)
+	_raycaster.player.fov = value >= math.rad(30) and value or math.rad(30)
+end
+
+
+function onSetMoveStep(callbackData)
+	local value = tonumber(callbackData.value)
+	if value ~= nil then
+		_raycaster.player.moveStep = value
+	end
+end
+function onSetRotateStep(callbackData)
+	local value = tonumber(callbackData.value)
+	if value ~= nil then
+		_raycaster.player.rotateStep = math.rad(value)
+	end
+end
+function onSetHitboxSize(callbackData)
+	local value = tonumber(callbackData.value)
+	if value ~= nil and value >= 0 then
+		_raycaster.player._hitboxSize = value
+	end
+end
+function onSetWallSize(callbackData)
+	local value = tonumber(callbackData.value)
+	if value ~= nil and value >= 0 then
+		_raycaster._wallScallingFactor = value
+	end
+end
+
 ---------------------------------------------------------------------------------------------
 -- Initialization
 ---------------------------------------------------------------------------------------------
@@ -496,7 +534,9 @@ keybinds = { -- Contains all the keybinds used
 	moveForwards = "I",
 	moveBackwards = "K",
 	rotateLeft = "U",
-	rotateRight = "O"
+	rotateRight = "O",
+	increaseFov = "Y",
+	decreaseFov = "H"
 }
 
 -- Update speed
@@ -522,11 +562,22 @@ function onPlayerJoined()
 	tm.input.RegisterFunctionToKeyUpCallback(0, "rotateRightUp", keybinds.rotateRight)
 	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateLeftDown", keybinds.rotateLeft)
 	tm.input.RegisterFunctionToKeyUpCallback(0, "rotateLeftUp", keybinds.rotateLeft)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "increaseFov", keybinds.increaseFov)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "decreaseFov", keybinds.decreaseFov)
 	tm.playerUI.AddUILabel(0, 0, "Angle: ")
 	tm.playerUI.AddUILabel(0, 1, "Position:")
 	tm.playerUI.AddUILabel(0, 2, "X=")
 	tm.playerUI.AddUILabel(0, 3, "Y=")
 	tm.playerUI.AddUILabel(0, 4, "PositionGrid: ")
+	tm.playerUI.AddUILabel(0, 5, "FOV: ")
+	tm.playerUI.AddUILabel(0, 6, "Move Step:")
+	tm.playerUI.AddUIText(0, 7, "0.03", onSetMoveStep)
+	tm.playerUI.AddUILabel(0, 8, "Rotate Step:")
+	tm.playerUI.AddUIText(0, 9, "2", onSetRotateStep)
+	tm.playerUI.AddUILabel(0, 10, "Hitbox Radius:")
+	tm.playerUI.AddUIText(0, 11, "0.1", onSetHitboxSize)
+	tm.playerUI.AddUILabel(0, 12, "Wall Size:")
+	tm.playerUI.AddUIText(0, 13, "15", onSetWallSize)
 end
 
 tm.players.OnPlayerJoined.add(onPlayerJoined)
