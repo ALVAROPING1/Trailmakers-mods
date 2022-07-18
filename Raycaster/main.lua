@@ -346,20 +346,27 @@ end
 ---@param y number
 ---@return nil
 function raycaster:movePlayerAbsolute(x, y)
+	--tm.os.Log("-----------------------------------------")
 	local nextPositionX = self.player.position.x + x
 	local nextPositionY = self.player.position.y + y
-	local direction = math.atan(y, x)
+	---@diagnostic disable-next-line: deprecated #The lua version the game uses seems to use an older version in which `math.atan(y, x)` gives the incorrect result
+	local direction = math.atan2(y, x)
+	--tm.os.Log("X=" .. x .. ", Y=" .. y)
+	--tm.os.Log("nextX=" .. nextPositionX .. ", nextY=" .. nextPositionY)
+	--tm.os.Log("angle=" .. math.deg(direction))
 	-- Calculates the tile position the player would be on after being moved with an extra distance in the direction of travel for the hitbox
 	local tileX = math.floor(nextPositionX + (x>0 and 1 or -1) * self.player._hitboxSize * math.cos(direction)) + 1
 	local tileY = math.floor(nextPositionY + (y>0 and 1 or -1) * self.player._hitboxSize * math.sin(direction)) + 1
+	--tm.os.Log("tileX=" .. tileX .. ", tileY=" .. tileY)
 	-- Checks that the calculated tile is empty
-	--tm.os.Log("check collision")
 	if self.map[tileX][tileY] == 0 then
 		-- If it is, moves the player
-		--tm.os.Log("no collision")
+		--tm.os.Log("Succesful movement")
 		self.player.position.x = nextPositionX
 		self.player.position.y = nextPositionY
 	elseif x ~= 0 and y ~= 0 then
+		--tm.os.Log("Unsuccessful movement")
+		--tm.os.Log("|x| >= |y| == " .. tostring(math.abs(x) >= math.abs(y)))
 		-- If it isn't, tries to move the player along the individual axes, trying first in the one in which the player would move the most
 		if math.abs(x) >= math.abs(y) then
 			self:movePlayerAbsolute(x, 0)
@@ -382,6 +389,7 @@ function raycaster:movePlayerRelative(x, y)
 	-- Applies a change of basis to the input vector to transform it from a base relative to the player to a base relative to the map
 	local absoluteX = x * cosAngle - y * sinAngle
 	local absoluteY = x * sinAngle + y * cosAngle
+	--tm.os.Log("===============================================================================================================")
 	self:movePlayerAbsolute(absoluteX, absoluteY)
 end
 
@@ -410,7 +418,7 @@ function raycaster:updatePlayer(input)
 	if input.rotateLeft then angle = angle - self.player.rotateStep end
 	if input.rotateRight then angle = angle + self.player.rotateStep end
 
-	self:movePlayerRelative(x, y)
+	if x ~= 0 or y ~= 0 then self:movePlayerRelative(x, y) end
 	self:rotatePlayer(angle)
 end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
