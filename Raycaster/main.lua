@@ -355,8 +355,8 @@ function raycaster:movePlayerAbsolute(x, y)
 	--tm.os.Log("nextX=" .. nextPositionX .. ", nextY=" .. nextPositionY)
 	--tm.os.Log("angle=" .. math.deg(direction))
 	-- Calculates the tile position the player would be on after being moved with an extra distance in the direction of travel for the hitbox
-	local tileX = math.floor(nextPositionX + (x>0 and 1 or -1) * self.player._hitboxSize * math.cos(direction)) + 1
-	local tileY = math.floor(nextPositionY + (y>0 and 1 or -1) * self.player._hitboxSize * math.sin(direction)) + 1
+	local tileX = math.floor(nextPositionX + self.player._hitboxSize * math.cos(direction)) + 1
+	local tileY = math.floor(nextPositionY + self.player._hitboxSize * math.sin(direction)) + 1
 	--tm.os.Log("tileX=" .. tileX .. ", tileY=" .. tileY)
 	-- Checks that the calculated tile is empty
 	if self.map[tileX][tileY] == 0 then
