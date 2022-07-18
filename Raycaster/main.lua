@@ -551,6 +551,20 @@ keybinds = { -- Contains all the keybinds used
 tm.os.SetModTargetDeltaTime(1/15)
 
 _raycaster = raycaster:new()
+_raycaster.map = {
+	{1,1,1,1,1,1,1,1,1,1,1},
+	{1,0,1,0,0,0,0,0,0,0,1},
+	{1,0,1,0,0,0,1,1,1,0,1},
+	{1,0,1,0,0,0,0,0,1,0,1},
+	{1,0,1,0,0,0,0,0,1,0,1},
+	{1,0,0,0,0,1,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,0,0,1},
+	{1,0,0,0,0,0,0,0,1,0,1},
+	{1,0,0,0,0,0,0,0,0,0,1},
+	{1,1,1,1,1,1,1,1,1,1,1}
+}
+_raycaster.player.angle = math.rad(180)
 _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
 _raycaster._wallScallingFactor = wallScallingFactor
