@@ -157,6 +157,16 @@ function raycaster:spawn()
 	self:_updateScreen()
 end
 
+--- Despawns the screen and deletes the instance
+---
+---@return nil
+function raycaster:despawn()
+	self.screen:despawn()
+	-- Deletes the instance
+	---@diagnostic disable-next-line: cast-local-type
+	self = nil
+end
+
 --- Updates the state of the player and screen
 ---
 ---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
