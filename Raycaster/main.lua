@@ -153,21 +153,31 @@ function raycaster:spawn()
 	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 	self.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 	self.screen:spawn()
+	-- Draws the first frame
+	self:_updateScreen()
 end
 
---- Updates the screen
+--- Updates the state of the player and screen
 ---
 ---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
 ---@return nil
 function raycaster:update(input)
 	-- Updates the player according to the buttons pressed
-	_raycaster:updatePlayer(input)
+	local updateScreen = _raycaster:updatePlayer(input)
 
 	--tm.os.Log("-----------------------------------------------------------------------------------------------------------------------------------------------")
 
 	-- Simplifies the angle of the player
 	self.player.angle = self.player.angle % (math.pi * 2)
 
+	-- Updates the screen only if the player was moved/rotated (otherwise the rendered frame won't change)
+	if updateScreen then _raycaster:_updateScreen() end
+end
+
+--- Updates the screen
+---
+---@return nil
+function raycaster:_updateScreen()
 	-- Table with the distance and position returned by each casted ray
 	local rays = {}
 
@@ -175,6 +185,7 @@ function raycaster:update(input)
 	for i = 0, self.screen.sizeH - 1 do
 		-- Calculates the offset of the ray from the player direction based on the amount of rays and the size of the FOV
 		local offset = self.player.fov * (-1/2 + 1 / (2 * self.screen.sizeH) + i / self.screen.sizeH)
+		-- Casts a ray and adds the result to the rays table
 		table.insert(rays, self:_castRay(offset))
 	end
 
@@ -298,7 +309,7 @@ function raycaster:_hitWall(positionX, positionY)
 	return tonumber(string.format("%.10f", rawDistance))
 end
 
---- Draws the next frame and updates the screen with it
+--- Draws the next frame and pushes it to the screen
 ---
 ---@param rays {[integer]: {[1]: number, [2]: integer}}
 ---@return nil
@@ -338,6 +349,35 @@ function raycaster:_drawScreen(rays)
 	-- Pushes the rendered frame to the screen and updates it
 	self.screen:setNextFrameDelta(nextFrame)
 	self.screen:update()
+end
+
+--- Updates the player's position and direction based on the state of the input
+--- buttons and returns a boolean indicating if its position/rotation was changed
+---
+---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
+---@return boolean
+function raycaster:updatePlayer(input)
+	-- Total movement/rotation values
+	local x = 0
+	local y = 0
+	local angle = 0
+
+	-- Adds movement/rotation to the totals based on the inputs
+	if input.moveLeft then y = y - self.player.moveStep end
+	if input.moveRight then y = y + self.player.moveStep end
+	if input.moveForwards then x = x + self.player.moveStep end
+	if input.moveBackwards then x = x - self.player.moveStep end
+
+	if input.rotateLeft then angle = angle - self.player.rotateStep end
+	if input.rotateRight then angle = angle + self.player.rotateStep end
+
+	-- Tries to move the player if the total movement isn't 0
+	if x ~= 0 or y ~= 0 then self:movePlayerRelative(x, y) end
+	-- Rotates the player
+	self:rotatePlayer(angle)
+
+	-- Returns if the player was moved/rotated
+	return x ~= 0 or y ~= 0 or angle ~= 0
 end
 
 --- Moves the player by the given absolute coordinates
@@ -401,26 +441,6 @@ function raycaster:rotatePlayer(angle)
 	self.player.angle = self.player.angle + angle
 end
 
---- Updates the player's position and direction based on the state of the input buttons
----
----@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
----@return nil
-function raycaster:updatePlayer(input)
-	local x = 0
-	local y = 0
-	local angle = 0
-
-	if input.moveLeft then y = y - self.player.moveStep end
-	if input.moveRight then y = y + self.player.moveStep end
-	if input.moveForwards then x = x + self.player.moveStep end
-	if input.moveBackwards then x = x - self.player.moveStep end
-
-	if input.rotateLeft then angle = angle - self.player.rotateStep end
-	if input.rotateRight then angle = angle + self.player.rotateStep end
-
-	if x ~= 0 or y ~= 0 then self:movePlayerRelative(x, y) end
-	self:rotatePlayer(angle)
-end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function update()
@@ -488,10 +508,12 @@ end
 function increaseFov()
 	local value = _raycaster.player.fov + math.rad(1)
 	_raycaster.player.fov = value <= math.rad(180) and value or math.rad(180)
+	_raycaster:_updateScreen()
 end
 function decreaseFov()
 	local value = _raycaster.player.fov - math.rad(1)
 	_raycaster.player.fov = value >= math.rad(30) and value or math.rad(30)
+	_raycaster:_updateScreen()
 end
 
 
@@ -517,6 +539,7 @@ function onSetWallSize(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil and value >= 0 then
 		_raycaster._wallScallingFactor = value
+		_raycaster:_updateScreen()
 	end
 end
 
