@@ -130,6 +130,7 @@ raycaster = {
 		rotateStep = math.rad(2),
 		_hitboxSize = 0.1,
 	},
+	colors = {N = 3, S = 1, E = 2, W = 2},
 	screen = screen:new({collision = false}),
 	_wallScallingFactor = 15
 }
@@ -207,7 +208,7 @@ end
 --- the distance from the wall it hits and the orientation of that wall
 ---
 ---@param angleOffset number
----@return {[1]: number, [2]: integer}
+---@return {[1]: number, [2]: string}
 function raycaster:_castRay(angleOffset)
 	local rayAngle = (self.player.angle + angleOffset) % (math.pi * 2)
 	--tm.os.Log("Tracing ray at angle=" .. math.deg(rayAngle))
@@ -275,7 +276,7 @@ function raycaster:_castRay(angleOffset)
 				-- If there is a wall, calculates its distance and orientation, and exits the loop
 				hitWall = true
 				distance = self:_hitWall(intersectV_X, intersectV_Y)
-				orientation = 2
+				orientation = rayLeft and "W" or "E"
 				break
 			end
 			-- If there isn't a wall, advances the position of the intersection with a vertical grid line to the next position
@@ -293,7 +294,7 @@ function raycaster:_castRay(angleOffset)
 				-- If there is a wall, calculates its distance and orientation, and exits the loop
 				hitWall = true
 				distance = self:_hitWall(intersectH_X, intersectH_Y)
-				orientation = rayDown and 1 or 3
+				orientation = rayDown and "S" or "N"
 				break
 			end
 			-- If there isn't a wall, advances the position of the intersection with a horizontal grid line to the next position
@@ -321,7 +322,7 @@ end
 
 --- Draws the next frame and pushes it to the screen
 ---
----@param rays {[integer]: {[1]: number, [2]: integer}}
+---@param rays {[integer]: {[1]: number, [2]: string}}
 ---@return nil
 function raycaster:_drawScreen(rays)
 	--tm.os.Log("--------- Draw ----------------------------------------------------------------------------------")
@@ -346,7 +347,7 @@ function raycaster:_drawScreen(rays)
 				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", sky")
 			elseif positionV < (self.screen.sizeV - wallHeight) / 2 + wallHeight then
 				-- The Y coordinate corresponds to a wall, use the color given by the ray
-				nextFrame[positionH][positionV] = rays[positionH + 1][2]
+				nextFrame[positionH][positionV] = self.colors[rays[positionH + 1][2]]
 				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", wall")
 			else
 				-- The Y coordinate corresponds to floor
