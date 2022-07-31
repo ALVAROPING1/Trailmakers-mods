@@ -455,7 +455,7 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function update()
-	_raycaster:update(controls)
+	_raycaster:update(controls.state[0])
 	tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
 	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
 	tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
@@ -467,54 +467,46 @@ end
 -- Controls
 ---------------------------------------------------------------------------------------------
 
+--- Stores the state of buttons
 controls = {
-	moveLeft = false,
-	moveRight = false,
-	moveForwards = false,
-	moveBackwards = false,
-	rotateRight = false,
-	rotateLeft = false
+	state = {}
 }
 
-function moveLeftDown()
-	controls.moveLeft = true
-end
-function moveLeftUp()
-	controls.moveLeft = false
-end
-function moveRightDown()
-	controls.moveRight = true
-end
-function moveRightUp()
-	controls.moveRight = false
-end
-function moveForwardsDown()
-	controls.moveForwards = true
-end
-function moveForwardsUp()
-	controls.moveForwards = false
-end
-function moveBackwardsDown()
-	controls.moveBackwards = true
-end
-function moveBackwardsUp()
-	controls.moveBackwards = false
-end
-
-function rotateLeftDown()
-	controls.rotateLeft = true
-end
-function rotateLeftUp()
-	controls.rotateLeft = false
-end
-function rotateRightDown()
-	controls.rotateRight = true
-end
-function rotateRightUp()
-	controls.rotateRight = false
+--- Adds a control to track
+---
+---@param control string
+---@return nil
+function controls:addControl(control)
+	-- Creates global functions to update the state of the control
+	_G[control .. "Down"] = function (playerId)
+		self.state[playerId][control] = true
+	end
+	_G[control .. "Up"] = function (playerId)
+		self.state[playerId][control] = false
+	end
 end
 
 
+--- Binds a given control to a keybind for the specified player
+---
+---@param control string
+---@param keybind string
+---@param playerId integer
+---@return nil
+function controls:bindControlToKeybind(control, keybind, playerId)
+	-- Binds the global functions to update the state of a control to a keybind for the specified player
+	tm.input.RegisterFunctionToKeyDownCallback(playerId, control .. "Down", keybind)
+	tm.input.RegisterFunctionToKeyUpCallback(playerId, control .. "Up", keybind)
+	-- If no controls have been bind yet to that player, creates a table for their controls
+	if self.state[playerId] == nil then self.state[playerId] = {} end
+	-- Sets the default state of the control
+	self.state[playerId][control] = false
+end
+
+
+---------------------------------------------------------------------------------------------
+-- Debug controls
+---------------------------------------------------------------------------------------------
 
 function increaseFov()
 	local value = _raycaster.player.fov + math.rad(1)
@@ -571,15 +563,23 @@ wallScallingFactor = 15 -- 75,25 for 80x60, 40,15 for 48x36
 
 -- Keybinds
 keybinds = { -- Contains all the keybinds used
-	moveLeft = "J",
-	moveRight = "L",
-	moveForwards = "I",
-	moveBackwards = "K",
-	rotateLeft = "U",
-	rotateRight = "O",
+	gameControls = {
+		moveLeft = "J",
+		moveRight = "L",
+		moveForwards = "I",
+		moveBackwards = "K",
+		rotateLeft = "U",
+		rotateRight = "O"
+	},
 	increaseFov = "Y",
 	decreaseFov = "H"
 }
+
+-- Sets the game controls to be tracked and binds them to keybinds
+for key, value in pairs(keybinds.gameControls) do
+	controls:addControl(key)
+	controls:bindControlToKeybind(key, value, 0)
+end
 
 -- Update speed
 tm.os.SetModTargetDeltaTime(1/15)
@@ -604,22 +604,8 @@ _raycaster.screen.sizeV = verticalSize
 _raycaster._wallScallingFactor = wallScallingFactor
 _raycaster:spawn()
 
-
-function onPlayerJoined()
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveRightDown", keybinds.moveRight)
-	tm.input.RegisterFunctionToKeyUpCallback(0, "moveRightUp", keybinds.moveRight)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveLeftDown", keybinds.moveLeft)
-	tm.input.RegisterFunctionToKeyUpCallback(0, "moveLeftUp", keybinds.moveLeft)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveForwardsDown", keybinds.moveForwards)
-	tm.input.RegisterFunctionToKeyUpCallback(0, "moveForwardsUp", keybinds.moveForwards)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "moveBackwardsDown", keybinds.moveBackwards)
-	tm.input.RegisterFunctionToKeyUpCallback(0, "moveBackwardsUp", keybinds.moveBackwards)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateRightDown", keybinds.rotateRight)
-	tm.input.RegisterFunctionToKeyUpCallback(0, "rotateRightUp", keybinds.rotateRight)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "rotateLeftDown", keybinds.rotateLeft)
-	tm.input.RegisterFunctionToKeyUpCallback(0, "rotateLeftUp", keybinds.rotateLeft)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "increaseFov", keybinds.increaseFov)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "decreaseFov", keybinds.decreaseFov)
+-- Adds an UI to the host with debug information and controls
+function createDebugUI()
 	tm.playerUI.AddUILabel(0, 0, "Angle: ")
 	tm.playerUI.AddUILabel(0, 1, "Position:")
 	tm.playerUI.AddUILabel(0, 2, "X=")
@@ -634,6 +620,13 @@ function onPlayerJoined()
 	tm.playerUI.AddUIText(0, 11, "0.1", onSetHitboxSize)
 	tm.playerUI.AddUILabel(0, 12, "Wall Size:")
 	tm.playerUI.AddUIText(0, 13, "15", onSetWallSize)
+end
+
+function onPlayerJoined()
+	-- Adds debug controls and UI
+	tm.input.RegisterFunctionToKeyDownCallback(0, "increaseFov", keybinds.increaseFov)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "decreaseFov", keybinds.decreaseFov)
+	createDebugUI()
 end
 
 tm.players.OnPlayerJoined.add(onPlayerJoined)
