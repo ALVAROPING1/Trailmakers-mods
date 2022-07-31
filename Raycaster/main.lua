@@ -174,7 +174,7 @@ end
 ---@return nil
 function raycaster:update(input)
 	-- Updates the player according to the buttons pressed
-	local updateScreen = _raycaster:updatePlayer(input)
+	local updateScreen = self:updatePlayer(input)
 
 	--tm.os.Log("-----------------------------------------------------------------------------------------------------------------------------------------------")
 
@@ -182,7 +182,7 @@ function raycaster:update(input)
 	self.player.angle = self.player.angle % (math.pi * 2)
 
 	-- Updates the screen only if the player was moved/rotated (otherwise the rendered frame won't change)
-	if updateScreen then _raycaster:_updateScreen() end
+	if updateScreen then self:_updateScreen() end
 end
 
 --- Updates the screen
