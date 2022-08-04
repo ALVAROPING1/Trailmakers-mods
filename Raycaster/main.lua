@@ -552,14 +552,29 @@ end
 -- Controls
 ---------------------------------------------------------------------------------------------
 
+---@class controls
+---@field state {[integer]: {[string]: boolean}}
+---
 --- Stores the state of buttons
+---
+--- Use `controls.Parameter` to access a parameter
+---
+--- Use `controls:function()` to call a function
+---
+--- Parameters:
+--- - `state`: table containing the state of the buttons for each player. The
+---   first index is the playerId while the second index is the control name
+---
+--- Methods:
+--- - `addControl`: adds a control to track. Returns nil
+--- - `bindControlToKeybind`: binds a tracked control to a keybind for the specified player. Returns nil
 controls = {
 	state = {}
 }
 
 --- Adds a control to track
 ---
----@param control string
+---@param control string Name of the control
 ---@return nil
 function controls:addControl(control)
 	-- Creates global functions to update the state of the control
@@ -572,11 +587,11 @@ function controls:addControl(control)
 end
 
 
---- Binds a given control to a keybind for the specified player
+--- Binds a tracked control to a keybind for the specified player
 ---
----@param control string
----@param keybind string
----@param playerId integer
+---@param control string Name of the control
+---@param keybind string Keybind to use
+---@param playerId integer ID of the player to bind the function to 
 ---@return nil
 function controls:bindControlToKeybind(control, keybind, playerId)
 	-- Binds the global functions to update the state of a control to a keybind for the specified player
