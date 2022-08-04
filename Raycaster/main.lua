@@ -573,6 +573,8 @@ end
 --- - `addControl`: adds a control to track. Returns nil
 --- - `bindControlToKeybind`: binds a tracked control to a keybind for the specified player. Returns nil
 controls = {
+	--- Contains the state of the buttons for each player. The first
+	--- index is the playerId while the second index is the control name
 	state = {}
 }
 
