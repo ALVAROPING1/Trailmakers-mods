@@ -106,7 +106,7 @@ end
 ---
 --- To create a new instance, do `instanceName = interpolateQuaternions:new()`
 --- - After creating an instance, you can do `instanceName.Parameter = value` to change a parameter
---- - After creating an instance, you can do `instanceName:function()` to call a function
+--- - After creating an instance, you can do `instanceName:method()` to call a method
 ---
 --- Public parameters:
 --- - `startRotation`: quaternion defining the starting rotation, can be obtained from the euler angles with `tm.quaternion.Create(tm.vector3.Create(eulerAngles))`.

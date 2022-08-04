@@ -22,7 +22,7 @@
 ---
 --- To create a new instance, do `instanceName = screen:new()`
 --- - After creating an instance, you can do `instanceName.Parameter = value` to change a parameter
---- - After creating an instance, you can do `instanceName:function()` to call a function
+--- - After creating an instance, you can do `instanceName:method()` to call a method
 ---
 --- Public parameters (with the exception of `nextFrameDelta` they can only be changed before calling the `self.spawn()` function):
 --- - `position`: vector3 defining the position of the bottom left corner of the screen
