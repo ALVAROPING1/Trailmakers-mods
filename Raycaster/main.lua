@@ -1,3 +1,9 @@
+-- By ALVAROPING1
+--
+-- To use it on your mod, you need to copy all the code enclosed by the '-' lines
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Screen prototype. Documentation and examples can be found on the standalone 'Screen Utilities' mod here: https://steamcommunity.com/sharedfiles/filedetails/?id=2511989739
 screen = {
@@ -119,26 +125,100 @@ end
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
----@class Raycaster
+--- Depends on "Screen Utilities"
+---
+---@class player
+---@field position {x: number, y: number}
+---@field angle number
+---@field fov number
+---@field moveStep number
+---@field rotateStep number
+---@field hitboxSize number
+---
+---@class raycaster
+---@field map {[integer]: {[integer]: 0 | 1}}
+---@field player player
+---@field colors {wall: {N: integer, S: integer, E: integer, W: integer}, floor: integer, sky: integer}
+---@field _screen screen
+---@field wallScallingFactor number
+---
+--- Creates a raycaster with a screen attached which can render a 2D map in 3D and display it on the screen
+---
+--- To create a new instance, do `instanceName = raycaster:new()`
+--- - After creating an instance, you can do `instanceName.Parameter = value` to change a parameter
+--- - After creating an instance, you can do `instanceName:function()` to call a function
+---
+--- Public parameters:
+--- - `map`: 2D array defining the map where each value is either 0 (empty) or 1 (wall)
+--- - `player`: player object storing information about the player
+---   - `position`: table defining the x and y positions of the player
+---   - `angle`: float defining the facing direction of the player in radians
+---   - `fov`: float defining the field of view of the player in radians
+---   - `moveStep`: float defining the distance traveled on each frame when moving
+---   - `rotateStep`: float defining the angle rotated in radians on each frame when rotating
+---   - `hitboxSize`: float defining the radius of the hitbox of the player
+--- - `colors`: table defining the color used for each surface. For possible values, see the documentation about colors of "Screen Utilities"
+---   - `wall`: table defining the color used for walls in each direction. The orientation of a wall is defined as the direction
+---      a ray hitting it perpendicularly would have, with east being the positive X axis and north the positive Y axis
+---   - `floor`: integer defining the color used for the floor
+---   - `sky`: integer defining the color used for the sky
+--- - `wallScallingFactor`: float defining the scalling factor for the height of walls
+--- - `screen`: screen object used to show rendered images
+---
+--- Public methods:
+--- - `spawn()`: spawns the screen. Returns nil
+--- - `despawn()`: despawns the screen and deletes the instance. Returns nil
+--- - `update()`: Updates the state of the player and screen according to the given inputs. Returns nil
+---
+--- Private methods (you shouldn't need to call these):
+--- - `_castRay`: casts a ray with the given offset from the player direction and
+---   returns the distance from the wall it hits and the orientation of that wall
+--- - `_hitWall`: calculates and returns the distance between the player and the point while correcting for the fisheye effect
+--- - `_drawScreen`: draws the next frame and pushes it to the screen. Returns nil
+--- - `_updatePlayer`: updates the player's position and direction based on the state of the input
+---   buttons and returns a boolean indicating if its position/rotation was changed
+--- - `_movePlayerAbsolute`: moves the player by the given absolute coordinates. Returns nil
+--- - `_movePlayerRelative`: moves the player by the given coordinates relative
+---   to its facing direction (x is forwards while y is right). Returns nil
+--- - `_rotatePlayer`: rotates the player clockwise by the given angle in radians. Returns nil
 raycaster = {
+	--- Defines the map where each value is either 0 (empty) or 1 (wall)
 	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,1,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+	--- Stores information about the player
 	player = {
+		--- Defines the x and y positions of the player
 		position = {x = 1.5, y = 1.5},
+		--- Defines the facing direction of the player in radians
 		angle = math.rad(45),
+		--- Defines the field of view of the player in radians
 		fov = math.rad(90),
+		--- Defines the distance traveled on each frame when moving
 		moveStep = 0.03,
+		--- Defines the angle rotated in radians on each frame when rotating
 		rotateStep = math.rad(2),
+		--- Defines the radius of the hitbox of the player
 		hitboxSize = 0.1,
 	},
-	colors = {wall = {N = 3, S = 1, E = 2, W = 2}, floor = 4, sky = 5},
-	screen = screen:new({collision = false}),
-	wallScallingFactor = 15
+	--- Defines the color used for each surface. For possible values, see the documentation about colors of "Screen Utilities"
+	colors = {
+		--- Defines the color used for walls in each direction. The orientation of a wall is defined as the direction
+		--- a ray hitting it perpendicularly would have, with east being the positive X axis and north the positive Y axis
+		wall = {N = 3, S = 1, E = 2, W = 2},
+		--- Defines the color used for the floor
+		floor = 4,
+		--- Defines the color used for the sky
+		sky = 5
+	},
+	--- Defines the scalling factor for the height of walls
+	wallScallingFactor = 15,
+	--- Screen object used to show rendered images
+	screen = screen:new({collision = false})
 }
 
 --- Function defining how to create a new instance from the prototype
 ---
 ---@param o table|nil
----@return Raycaster
+---@return raycaster
 function raycaster:new(o)
 	o = o or {} -- create object if user does not provide one
 	setmetatable(o, self)
@@ -168,7 +248,7 @@ function raycaster:despawn()
 	self = nil
 end
 
---- Updates the state of the player and screen
+--- Updates the state of the player according to the given inputs and screen
 ---
 ---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
 ---@return nil
@@ -307,7 +387,7 @@ function raycaster:_castRay(angleOffset)
 	return {distance, orientation}
 end
 
---- Calculates the distance between the player and the collision point while correcting for the fisheye effect
+--- Calculates the distance between the player and the point while correcting for the fisheye effect
 ---
 ---@param positionX number
 ---@param positionY number
@@ -429,7 +509,7 @@ function raycaster:_movePlayerAbsolute(x, y)
 	end
 end
 
---- Moves the player by the given coordinates relative to its facing direction
+--- Moves the player by the given coordinates relative to its facing direction (x is forwards while y is right)
 ---
 ---@param x number
 ---@param y number
@@ -444,7 +524,7 @@ function raycaster:_movePlayerRelative(x, y)
 	self:_movePlayerAbsolute(absoluteX, absoluteY)
 end
 
---- Rotates the player by the given angle in radians
+--- Rotates the player clockwise by the given angle in radians
 ---
 ---@param angle number
 ---@return nil
