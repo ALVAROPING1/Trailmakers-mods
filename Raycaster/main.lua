@@ -184,21 +184,26 @@ end
 raycaster = {
 	--- Defines the map where each value is either 0 (empty) or 1 (wall)
 	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,1,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
+
 	--- Stores information about the player
 	player = {
 		--- Defines the x and y positions of the player
 		position = {x = 1.5, y = 1.5},
 		--- Defines the facing direction of the player in radians
 		angle = math.rad(45),
+
 		--- Defines the field of view of the player in radians
 		fov = math.rad(90),
+
 		--- Defines the distance traveled on each frame when moving
 		moveStep = 0.03,
 		--- Defines the angle rotated in radians on each frame when rotating
 		rotateStep = math.rad(2),
+
 		--- Defines the radius of the hitbox of the player
 		hitboxSize = 0.1,
 	},
+
 	--- Defines the color used for each surface. For possible values, see the documentation about colors of "Screen Utilities"
 	colors = {
 		--- Defines the color used for walls in each direction. The orientation of a wall is defined as the direction
@@ -209,8 +214,10 @@ raycaster = {
 		--- Defines the color used for the sky
 		sky = 5
 	},
+
 	--- Defines the scalling factor for the height of walls
 	wallScallingFactor = 15,
+
 	--- Screen object used to show rendered images. See the documentation of "Screen Utilities" for more information
 	screen = screen:new()
 }
