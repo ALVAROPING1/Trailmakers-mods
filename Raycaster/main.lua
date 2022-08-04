@@ -128,11 +128,11 @@ raycaster = {
 		fov = math.rad(90),
 		moveStep = 0.03,
 		rotateStep = math.rad(2),
-		_hitboxSize = 0.1,
+		hitboxSize = 0.1,
 	},
 	colors = {N = 3, S = 1, E = 2, W = 2},
 	screen = screen:new({collision = false}),
-	_wallScallingFactor = 15
+	wallScallingFactor = 15
 }
 
 --- Function defining how to create a new instance from the prototype
@@ -334,7 +334,7 @@ function raycaster:_drawScreen(rays)
 		nextFrame[positionH] = {}
 
 		-- Height of the wall for that column based on its distance from the player
-		local wallHeight = self._wallScallingFactor / rays[positionH + 1][1]
+		local wallHeight = self.wallScallingFactor / rays[positionH + 1][1]
 		--tm.os.Log("Column=" .. positionH .. ", Height=" .. wallHeight)
 		--tm.os.Log("0<" .. (self.screen.sizeV - wallHeight) / 2 .. "<" .. (self.screen.sizeV - wallHeight) / 2 + wallHeight .. "<infty")
 
@@ -406,8 +406,8 @@ function raycaster:movePlayerAbsolute(x, y)
 	--tm.os.Log("nextX=" .. nextPositionX .. ", nextY=" .. nextPositionY)
 	--tm.os.Log("angle=" .. math.deg(direction))
 	-- Calculates the tile position the player would be on after being moved with an extra distance in the direction of travel for the hitbox
-	local tileX = math.floor(nextPositionX + self.player._hitboxSize * math.cos(direction)) + 1
-	local tileY = math.floor(nextPositionY + self.player._hitboxSize * math.sin(direction)) + 1
+	local tileX = math.floor(nextPositionX + self.player.hitboxSize * math.cos(direction)) + 1
+	local tileY = math.floor(nextPositionY + self.player.hitboxSize * math.sin(direction)) + 1
 	--tm.os.Log("tileX=" .. tileX .. ", tileY=" .. tileY)
 	-- Checks that the calculated tile is empty
 	if self.map[tileX][tileY] == 0 then
@@ -535,13 +535,13 @@ end
 function onSetHitboxSize(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil and value >= 0 then
-		_raycaster.player._hitboxSize = value
+		_raycaster.player.hitboxSize = value
 	end
 end
 function onSetWallSize(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil and value >= 0 then
-		_raycaster._wallScallingFactor = value
+		_raycaster.wallScallingFactor = value
 		_raycaster:_updateScreen()
 	end
 end
@@ -601,7 +601,7 @@ _raycaster.map = {
 _raycaster.player.angle = math.rad(180)
 _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
-_raycaster._wallScallingFactor = wallScallingFactor
+_raycaster.wallScallingFactor = wallScallingFactor
 _raycaster:spawn()
 
 -- Adds an UI to the host with debug information and controls
