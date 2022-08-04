@@ -174,7 +174,7 @@ end
 ---@return nil
 function raycaster:update(input)
 	-- Updates the player according to the buttons pressed
-	local updateScreen = self:updatePlayer(input)
+	local updateScreen = self:_updatePlayer(input)
 
 	--tm.os.Log("-----------------------------------------------------------------------------------------------------------------------------------------------")
 
@@ -367,7 +367,7 @@ end
 ---
 ---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
 ---@return boolean
-function raycaster:updatePlayer(input)
+function raycaster:_updatePlayer(input)
 	-- Total movement/rotation values
 	local x = 0
 	local y = 0
@@ -383,9 +383,9 @@ function raycaster:updatePlayer(input)
 	if input.rotateRight then angle = angle + self.player.rotateStep end
 
 	-- Tries to move the player if the total movement isn't 0
-	if x ~= 0 or y ~= 0 then self:movePlayerRelative(x, y) end
+	if x ~= 0 or y ~= 0 then self:_movePlayerRelative(x, y) end
 	-- Rotates the player
-	self:rotatePlayer(angle)
+	self:_rotatePlayer(angle)
 
 	-- Returns if the player was moved/rotated
 	return x ~= 0 or y ~= 0 or angle ~= 0
@@ -396,7 +396,7 @@ end
 ---@param x number
 ---@param y number
 ---@return nil
-function raycaster:movePlayerAbsolute(x, y)
+function raycaster:_movePlayerAbsolute(x, y)
 	--tm.os.Log("-----------------------------------------")
 	local nextPositionX = self.player.position.x + x
 	local nextPositionY = self.player.position.y + y
@@ -420,11 +420,11 @@ function raycaster:movePlayerAbsolute(x, y)
 		--tm.os.Log("|x| >= |y| == " .. tostring(math.abs(x) >= math.abs(y)))
 		-- If it isn't, tries to move the player along the individual axes, trying first in the one in which the player would move the most
 		if math.abs(x) >= math.abs(y) then
-			self:movePlayerAbsolute(x, 0)
-			self:movePlayerAbsolute(0, y)
+			self:_movePlayerAbsolute(x, 0)
+			self:_movePlayerAbsolute(0, y)
 		else
-			self:movePlayerAbsolute(0, y)
-			self:movePlayerAbsolute(x, 0)
+			self:_movePlayerAbsolute(0, y)
+			self:_movePlayerAbsolute(x, 0)
 		end
 	end
 end
@@ -434,21 +434,21 @@ end
 ---@param x number
 ---@param y number
 ---@return nil
-function raycaster:movePlayerRelative(x, y)
+function raycaster:_movePlayerRelative(x, y)
 	local cosAngle = math.cos(self.player.angle)
 	local sinAngle = math.sin(self.player.angle)
 	-- Applies a change of basis to the input vector to transform it from a base relative to the player to a base relative to the map
 	local absoluteX = x * cosAngle - y * sinAngle
 	local absoluteY = x * sinAngle + y * cosAngle
 	--tm.os.Log("===============================================================================================================")
-	self:movePlayerAbsolute(absoluteX, absoluteY)
+	self:_movePlayerAbsolute(absoluteX, absoluteY)
 end
 
 --- Rotates the player by the given angle in radians
 ---
 ---@param angle number
 ---@return nil
-function raycaster:rotatePlayer(angle)
+function raycaster:_rotatePlayer(angle)
 	self.player.angle = self.player.angle + angle
 end
 
