@@ -139,7 +139,7 @@ end
 ---@field map {[integer]: {[integer]: 0 | 1}}
 ---@field player player
 ---@field colors {wall: {N: integer, S: integer, E: integer, W: integer}, floor: integer, sky: integer}
----@field _screen screen
+---@field screen screen
 ---@field wallScallingFactor number
 ---
 --- Creates a raycaster with a screen attached which can render a 2D map in 3D and display it on the screen
