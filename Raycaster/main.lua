@@ -168,19 +168,22 @@ end
 --- Public methods:
 --- - `spawn()`: spawns the screen. Returns nil
 --- - `despawn()`: despawns the screen and deletes the instance. Returns nil
---- - `update()`: Updates the state of the player and screen according to the given inputs. Returns nil
+--- - `update(input)`: Updates the state of the player and screen according to the given
+---   inputs. `input` is a table containing a boolean for each control. Returns nil
 ---
 --- Private methods (you shouldn't need to call these):
---- - `_castRay`: casts a ray with the given offset from the player direction and
+--- - `_updateScreen()`: updates the screen. Returns nil
+--- - `_castRay(angleOffset)`: casts a ray with the given offset from the player direction and
 ---   returns the distance from the wall it hits and the orientation of that wall
---- - `_hitWall`: calculates and returns the distance between the player and the point while correcting for the fisheye effect
---- - `_drawScreen`: draws the next frame and pushes it to the screen. Returns nil
---- - `_updatePlayer`: updates the player's position and direction based on the state of the input
----   buttons and returns a boolean indicating if its position/rotation was changed
---- - `_movePlayerAbsolute`: moves the player by the given absolute coordinates. Returns nil
---- - `_movePlayerRelative`: moves the player by the given coordinates relative
----   to its facing direction (x is forwards while y is right). Returns nil
---- - `_rotatePlayer`: rotates the player clockwise by the given angle in radians. Returns nil
+--- - `_hitWall(positionX, positionY)`: calculates and returns the distance between the player and the point while correcting for the fisheye effect
+--- - `_drawScreen(rays)`: draws the next frame and pushes it to the screen. `rays` is
+---   an array storing the data returned by `self:_castRay()` for each ray . Returns nil
+--- - `_updatePlayer(input)`: updates the player's position and direction based on the state of the input buttons and returns
+---   a boolean indicating if its position/rotation was changed. `input` is a table containing a boolean for each control
+--- - `_movePlayerAbsolute(x, y)`: moves the player by the given absolute coordinates. Returns nil
+--- - `_movePlayerRelative(x, y)`: moves the player by the given coordinates
+---   relative to its facing direction (x is forwards while y is right). Returns nil
+--- - `_rotatePlayer(angle)`: rotates the player clockwise by the given angle in radians. Returns nil
 raycaster = {
 	--- Defines the map where each value is either 0 (empty) or 1 (wall)
 	map = {{1,1,1,1,1}, {1,0,0,0,1}, {1,0,1,0,1}, {1,0,0,0,1}, {1,1,1,1,1}},
@@ -405,7 +408,7 @@ function raycaster:_hitWall(positionX, positionY)
 	return tonumber(string.format("%.10f", rawDistance))
 end
 
---- Draws the next frame and pushes it to the screen
+--- Draws the next frame and pushes it to the screen. `rays` is an array storing the data returned by `self:_castRay()` for each ray 
 ---
 ---@param rays {[integer]: {distance: number, orientation: "N" | "S" | "E" | "W"}}
 ---@return nil
@@ -448,7 +451,8 @@ function raycaster:_drawScreen(rays)
 end
 
 --- Updates the player's position and direction based on the state of the input
---- buttons and returns a boolean indicating if its position/rotation was changed
+--- buttons and returns a boolean indicating if its position/rotation was changed.
+--- `input` is a table containing a boolean for each control
 ---
 ---@param input {moveLeft: boolean, moveRight: boolean, moveForwards: boolean, moveBackwards: boolean, rotateRight: boolean, rotateLeft: boolean}
 ---@return boolean
