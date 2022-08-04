@@ -130,7 +130,7 @@ raycaster = {
 		rotateStep = math.rad(2),
 		hitboxSize = 0.1,
 	},
-	colors = {N = 3, S = 1, E = 2, W = 2},
+	colors = {wall = {N = 3, S = 1, E = 2, W = 2}, floor = 4, sky = 5},
 	screen = screen:new({collision = false}),
 	wallScallingFactor = 15
 }
@@ -343,15 +343,15 @@ function raycaster:_drawScreen(rays)
 		for positionV = 0, self.screen.sizeV - 1 do
 			if positionV < (self.screen.sizeV - wallHeight) / 2 then
 				-- The Y coordinate corresponds to sky
-				nextFrame[positionH][positionV] = 5
+				nextFrame[positionH][positionV] = self.colors.sky
 				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", sky")
 			elseif positionV < (self.screen.sizeV - wallHeight) / 2 + wallHeight then
 				-- The Y coordinate corresponds to a wall, use the color given by the ray
-				nextFrame[positionH][positionV] = self.colors[rays[positionH + 1][2]]
+				nextFrame[positionH][positionV] = self.colors.wall[rays[positionH + 1][2]]
 				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", wall")
 			else
 				-- The Y coordinate corresponds to floor
-				nextFrame[positionH][positionV] = 4
+				nextFrame[positionH][positionV] = self.colors.floor
 				--tm.os.Log("---Line=" .. positionV .. ", start=" .. (self.screen.sizeV - wallHeight) / 2 .. ", floor")
 			end
 		end
