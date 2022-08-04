@@ -18,7 +18,7 @@
 ---@field _pixels {[integer]: {[integer]: {object: ModGameObject, color: integer}}}
 ---@field _color2Rotation ModVector3[]
 ---
---- Creates a screen which can display images.
+--- Creates a screen which can display images
 ---
 --- To create a new instance, do `instanceName = screen:new()`
 --- - After creating an instance, you can do `instanceName.Parameter = value` to change a parameter
@@ -28,7 +28,7 @@
 --- - `position`: vector3 defining the position of the bottom left corner of the screen
 --- - `orientation`: float defining the orientation of the screen in degrees. For the best result, it's recommended to keep it as multiple of 90
 --- - `pixelSize`: float defining the size of the individual pixels. For the best result, it's recommended to keep it as a sum of powers of 2
---- - `collision`: boolean determining if the screen has collision or not. The method used to increase the LOD distance causes the hitbox to expand far away from one of the faces of the cube.
+--- - `collision`: boolean determining if the screen has collision or not. The method used to increase the LOD distance causes the hitbox to expand far away from one of the faces of the cube
 --- - `sizeH`: horizontal resolution
 --- - `sizeV`: vertical resolution
 --- - `cubeMesh`: string pointing to the object to be used as the pixels. Must be loaded with `tm.physics.AddMesh(filename, string)`. You shouldn't need to use any object other than the included `cube.obj`
