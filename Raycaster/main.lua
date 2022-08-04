@@ -211,8 +211,8 @@ raycaster = {
 	},
 	--- Defines the scalling factor for the height of walls
 	wallScallingFactor = 15,
-	--- Screen object used to show rendered images
-	screen = screen:new({collision = false})
+	--- Screen object used to show rendered images. See the documentation of "Screen Utilities" for more information
+	screen = screen:new()
 }
 
 --- Function defining how to create a new instance from the prototype
@@ -681,6 +681,7 @@ _raycaster.map = {
 _raycaster.player.angle = math.rad(180)
 _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
+_raycaster.screen.collision = false
 _raycaster.wallScallingFactor = wallScallingFactor
 _raycaster:spawn()
 
