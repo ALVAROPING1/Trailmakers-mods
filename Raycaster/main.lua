@@ -237,9 +237,7 @@ end
 ---
 ---@return nil
 function raycaster:spawn()
-	-- Sets the position of the screen and spawns it
-	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
-	self.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
+	-- Spawns the screen
 	self.screen:spawn()
 	-- Draws the first frame
 	self:_updateScreen()
@@ -690,6 +688,8 @@ _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
 _raycaster.screen.collision = false
 _raycaster.wallScallingFactor = wallScallingFactor
+---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
+_raycaster.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
 _raycaster:spawn()
 
 -- Adds an UI to the host with debug information and controls
