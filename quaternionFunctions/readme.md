@@ -2,17 +2,17 @@
     <img src="https://github.com/ALVAROPING1/Trailmaker-mods/blob/master/quaternionFunctions/preview.png" width="400" height="400" />
 </h1>
 
-# Quaternion Functions  
+# Quaternion Functions
 
-Rotation utilities using quaternions  
+Rotation utilities using quaternions
 
-Includes:  
+Includes:
 
-- Rotate vector  
-- Apply rotation transformation to a rotation  
-- Get relative rotation between 2 rotations  
-- Interpolate rotations  
+- Rotate vector
+- Apply rotation transformation to a rotation
+- Get relative rotation between 2 rotations
+- Interpolate rotations
 
-Documentation is included in the main.lua file  
+Documentation is included in the main.lua file
 
 [Download it through the steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=2506160857)
