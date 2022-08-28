@@ -6,7 +6,7 @@
 
 Allows to play "Bad Apple!!" in game with different resolutions and framerates using my "Screen Utilities" mod, which can be found [here](https://github.com/ALVAROPING1/Trailmaker-mods/tree/master/ScreenUtilities)
 
-Included versions
+Included versions:
 
 - 80x60 1fps
 - 60x45 3fps
