@@ -665,7 +665,10 @@ end
 -- UI
 ---------------------------------------------------------------------------------------------
 
--- Adds an UI to the host with debug information and controls
+--- Adds an UI to the given player with debug information and controls
+---
+---@param playerId integer
+---@return nil
 function createDebugUI(playerId)
 	tm.playerUI.ClearUI(playerId)
 	tm.playerUI.AddUIButton(0, "despawn", "Despawn Screen", despawnScreen)
@@ -685,6 +688,10 @@ function createDebugUI(playerId)
 	tm.playerUI.AddUIText(playerId, 13, "15", onSetWallSize)
 end
 
+--- Updates the debug UI of the given player
+---
+---@param playerId integer
+---@return nil
 function updateDebugUI(playerId)
 	tm.playerUI.SetUIValue(playerId, 0, "Angle: " .. math.deg(_raycaster.player.angle))
 	tm.playerUI.SetUIValue(playerId, 2, "X=" .. _raycaster.player.position.x)
@@ -693,6 +700,10 @@ function updateDebugUI(playerId)
 	tm.playerUI.SetUIValue(playerId, 5, "FOV: " .. math.deg(_raycaster.player.fov))
 end
 
+--- Creates the initial UI with a button to spawn the screen 
+---
+---@param playerId integer
+---@return nil
 function createSpawnUI(playerId)
 	tm.playerUI.ClearUI(playerId)
 	tm.playerUI.AddUIButton(playerId, "spawn", "Spawn Screen", spawnScreen)
@@ -746,6 +757,9 @@ keybinds = { -- Contains all the keybinds used
 	decreaseFov = "H"
 }
 
+--- Creates a raycaster instance, sets its parameters and spawns its screen
+---
+---@return nil
 function spawnScreen()
 	-- Creates a new raycaster instance
 	_raycaster = raycaster:new()
@@ -788,6 +802,9 @@ function spawnScreen()
 	spawned = true
 end
 
+--- Despawns the screen and deletes the raycaster instance
+---
+---@return nil
 function despawnScreen()
 	createSpawnUI(0)
 	_raycaster:despawn()
@@ -806,6 +823,7 @@ function onPlayerJoined()
 
 		-- Marks the mod as loaded
 		loaded = true
+		tm.os.Log("Mod loaded")
 	end
 end
 
