@@ -614,36 +614,53 @@ end
 -- Debug controls
 ---------------------------------------------------------------------------------------------
 
+--- Increases the FOV of the camera capped at 180 degrees
+---
+---@return nil
 function increaseFov()
 	local value = _raycaster.player.fov + math.rad(1)
 	_raycaster.player.fov = value <= math.rad(180) and value or math.rad(180)
 	_raycaster:_updateScreen()
 end
+--- Decreases the FOV of the camera capped at 30 degrees
+---
+---@return nil
 function decreaseFov()
 	local value = _raycaster.player.fov - math.rad(1)
 	_raycaster.player.fov = value >= math.rad(30) and value or math.rad(30)
 	_raycaster:_updateScreen()
 end
 
-
+--- Sets how much to move the player forwards/sideways when a movement key is pressed
+---
+---@return nil
 function onSetMoveStep(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil then
 		_raycaster.player.moveStep = value
 	end
 end
+--- Sets how much to rotate the player when a rotation key is pressed
+---
+---@return nil
 function onSetRotateStep(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil then
 		_raycaster.player.rotateStep = math.rad(value)
 	end
 end
+--- Sets the size of the player's hitbox
+---
+---@return nil
 function onSetHitboxSize(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil and value >= 0 then
 		_raycaster.player.hitboxSize = value
 	end
 end
+--- Sets how tall the walls are
+---
+---@return nil
 function onSetWallSize(callbackData)
 	local value = tonumber(callbackData.value)
 	if value ~= nil and value >= 0 then
@@ -690,7 +707,9 @@ end
 -- Update speed
 tm.os.SetModTargetDeltaTime(1/15)
 
+-- Creates a new raycaster instance
 _raycaster = raycaster:new()
+-- Modifies the map of the raycaster instance
 _raycaster.map = {
 	{1,1,1,1,1,1,1,1,1,1,1},
 	{1,0,1,0,0,0,0,0,0,0,1},
@@ -704,13 +723,22 @@ _raycaster.map = {
 	{1,0,0,0,0,0,0,0,0,0,1},
 	{1,1,1,1,1,1,1,1,1,1,1}
 }
+
+-- Sets the player's facing angle
 _raycaster.player.angle = math.rad(180)
+
+-- Sets the resolution of the screen used by the raycaster
 _raycaster.screen.sizeH = horizontalSize
 _raycaster.screen.sizeV = verticalSize
+-- Disables the collision of the screen
 _raycaster.screen.collision = false
-_raycaster.wallScallingFactor = wallScallingFactor
+-- Sets the position of the screen
 ---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
 _raycaster.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
+
+-- Sets the size of the walls
+_raycaster.wallScallingFactor = wallScallingFactor
+-- Spawns the screen
 _raycaster:spawn()
 
 -- Adds an UI to the host with debug information and controls
