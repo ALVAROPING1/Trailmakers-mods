@@ -543,17 +543,6 @@ end
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function update()
-	if spawned then
-		_raycaster:update(controls.state[0])
-		tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
-		tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
-		tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
-		tm.playerUI.SetUIValue(0, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
-		tm.playerUI.SetUIValue(0, 5, "FOV: " .. math.deg(_raycaster.player.fov))
-	end
-end
-
 ---------------------------------------------------------------------------------------------
 -- Controls
 ---------------------------------------------------------------------------------------------
@@ -671,6 +660,50 @@ function onSetWallSize(callbackData)
 	end
 end
 
+
+---------------------------------------------------------------------------------------------
+-- UI
+---------------------------------------------------------------------------------------------
+
+-- Adds an UI to the host with debug information and controls
+function createDebugUI(playerId)
+	tm.playerUI.ClearUI(playerId)
+	tm.playerUI.AddUIButton(0, "despawn", "Despawn Screen", despawnScreen)
+	tm.playerUI.AddUILabel(playerId, 0, "Angle: ")
+	tm.playerUI.AddUILabel(playerId, 1, "Position:")
+	tm.playerUI.AddUILabel(playerId, 2, "X=")
+	tm.playerUI.AddUILabel(playerId, 3, "Y=")
+	tm.playerUI.AddUILabel(playerId, 4, "PositionGrid: ")
+	tm.playerUI.AddUILabel(playerId, 5, "FOV: ")
+	tm.playerUI.AddUILabel(playerId, 6, "Move Step:")
+	tm.playerUI.AddUIText(playerId, 7, "0.03", onSetMoveStep)
+	tm.playerUI.AddUILabel(playerId, 8, "Rotate Step:")
+	tm.playerUI.AddUIText(playerId, 9, "2", onSetRotateStep)
+	tm.playerUI.AddUILabel(playerId, 10, "Hitbox Radius:")
+	tm.playerUI.AddUIText(playerId, 11, "0.1", onSetHitboxSize)
+	tm.playerUI.AddUILabel(playerId, 12, "Wall Size:")
+	tm.playerUI.AddUIText(playerId, 13, "15", onSetWallSize)
+end
+
+function updateDebugUI(playerId)
+	tm.playerUI.SetUIValue(playerId, 0, "Angle: " .. math.deg(_raycaster.player.angle))
+	tm.playerUI.SetUIValue(playerId, 2, "X=" .. _raycaster.player.position.x)
+	tm.playerUI.SetUIValue(playerId, 3, "Y=" .. _raycaster.player.position.y)
+	tm.playerUI.SetUIValue(playerId, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
+	tm.playerUI.SetUIValue(playerId, 5, "FOV: " .. math.deg(_raycaster.player.fov))
+end
+
+---------------------------------------------------------------------------------------------
+-- Update
+---------------------------------------------------------------------------------------------
+
+function update()
+	if spawned then
+		_raycaster:update(controls.state[0])
+		updateDebugUI(0)
+	end
+end
+
 ---------------------------------------------------------------------------------------------
 -- Initialization
 ---------------------------------------------------------------------------------------------
@@ -746,27 +779,12 @@ function spawnScreen()
 	-- Adds debug controls and UI
 	tm.input.RegisterFunctionToKeyDownCallback(0, "increaseFov", keybinds.increaseFov)
 	tm.input.RegisterFunctionToKeyDownCallback(0, "decreaseFov", keybinds.decreaseFov)
-	createDebugUI()
+	createDebugUI(0)
 	spawned = true
 end
 
--- Adds an UI to the host with debug information and controls
-function createDebugUI()
-	tm.playerUI.ClearUI(0)
-	tm.playerUI.AddUILabel(0, 0, "Angle: ")
-	tm.playerUI.AddUILabel(0, 1, "Position:")
-	tm.playerUI.AddUILabel(0, 2, "X=")
-	tm.playerUI.AddUILabel(0, 3, "Y=")
-	tm.playerUI.AddUILabel(0, 4, "PositionGrid: ")
-	tm.playerUI.AddUILabel(0, 5, "FOV: ")
-	tm.playerUI.AddUILabel(0, 6, "Move Step:")
-	tm.playerUI.AddUIText(0, 7, "0.03", onSetMoveStep)
-	tm.playerUI.AddUILabel(0, 8, "Rotate Step:")
-	tm.playerUI.AddUIText(0, 9, "2", onSetRotateStep)
-	tm.playerUI.AddUILabel(0, 10, "Hitbox Radius:")
-	tm.playerUI.AddUIText(0, 11, "0.1", onSetHitboxSize)
-	tm.playerUI.AddUILabel(0, 12, "Wall Size:")
-	tm.playerUI.AddUIText(0, 13, "15", onSetWallSize)
+function despawnScreen()
+	_raycaster:despawn()
 end
 
 function onPlayerJoined()
