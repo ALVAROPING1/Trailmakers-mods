@@ -544,12 +544,14 @@ end
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function update()
-	_raycaster:update(controls.state[0])
-	tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
-	tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
-	tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
-	tm.playerUI.SetUIValue(0, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
-	tm.playerUI.SetUIValue(0, 5, "FOV: " .. math.deg(_raycaster.player.fov))
+	if spawned then
+		_raycaster:update(controls.state[0])
+		tm.playerUI.SetUIValue(0, 0, "Angle: " .. math.deg(_raycaster.player.angle))
+		tm.playerUI.SetUIValue(0, 2, "X=" .. _raycaster.player.position.x)
+		tm.playerUI.SetUIValue(0, 3, "Y=" .. _raycaster.player.position.y)
+		tm.playerUI.SetUIValue(0, 4, "PositionGrid: X=" .. math.floor(_raycaster.player.position.x) .. ", Y=" .. math.floor(_raycaster.player.position.y))
+		tm.playerUI.SetUIValue(0, 5, "FOV: " .. math.deg(_raycaster.player.fov))
+	end
 end
 
 ---------------------------------------------------------------------------------------------
@@ -673,6 +675,9 @@ end
 -- Initialization
 ---------------------------------------------------------------------------------------------
 
+-- Update speed
+tm.os.SetModTargetDeltaTime(1/15)
+
 -- Loads the object and the texture
 tm.physics.AddTexture("cube.png", "cubePng")
 tm.physics.AddMesh("cube.obj", "cubeObj")
@@ -684,7 +689,12 @@ verticalSize = 36 -- 60, 36
 -- Wall size
 wallScallingFactor = 15 -- 75,25 for 80x60, 40,15 for 48x36
 
--- Keybinds
+-- Keeps track of if the mod has already been loaded or not
+loaded = false
+-- Keeps track of if the raycaster has been spawned
+spawned = false
+
+
 keybinds = { -- Contains all the keybinds used
 	gameControls = {
 		moveLeft = "J",
@@ -698,51 +708,51 @@ keybinds = { -- Contains all the keybinds used
 	decreaseFov = "H"
 }
 
--- Sets the game controls to be tracked and binds them to keybinds
-for key, value in pairs(keybinds.gameControls) do
-	controls:addControl(key)
-	controls:bindControlToKeybind(key, value, 0)
+function spawnScreen()
+	-- Creates a new raycaster instance
+	_raycaster = raycaster:new()
+	-- Modifies the map of the raycaster instance
+	_raycaster.map = {
+		{1,1,1,1,1,1,1,1,1,1,1},
+		{1,0,1,0,0,0,0,0,0,0,1},
+		{1,0,1,0,0,0,1,1,1,0,1},
+		{1,0,1,0,0,0,0,0,1,0,1},
+		{1,0,1,0,0,0,0,0,1,0,1},
+		{1,0,0,0,0,1,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,0,0,1},
+		{1,0,0,0,0,0,0,0,1,0,1},
+		{1,0,0,0,0,0,0,0,0,0,1},
+		{1,1,1,1,1,1,1,1,1,1,1}
+	}
+
+	-- Sets the player's facing angle
+	_raycaster.player.angle = math.rad(180)
+
+	-- Sets the resolution of the screen used by the raycaster
+	_raycaster.screen.sizeH = horizontalSize
+	_raycaster.screen.sizeV = verticalSize
+	-- Disables the collision of the screen
+	_raycaster.screen.collision = false
+	-- Sets the position of the screen
+	---@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
+	_raycaster.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
+
+	-- Sets the size of the walls
+	_raycaster.wallScallingFactor = wallScallingFactor
+	-- Spawns the screen
+	_raycaster:spawn()
+
+	-- Adds debug controls and UI
+	tm.input.RegisterFunctionToKeyDownCallback(0, "increaseFov", keybinds.increaseFov)
+	tm.input.RegisterFunctionToKeyDownCallback(0, "decreaseFov", keybinds.decreaseFov)
+	createDebugUI()
+	spawned = true
 end
-
--- Update speed
-tm.os.SetModTargetDeltaTime(1/15)
-
--- Creates a new raycaster instance
-_raycaster = raycaster:new()
--- Modifies the map of the raycaster instance
-_raycaster.map = {
-	{1,1,1,1,1,1,1,1,1,1,1},
-	{1,0,1,0,0,0,0,0,0,0,1},
-	{1,0,1,0,0,0,1,1,1,0,1},
-	{1,0,1,0,0,0,0,0,1,0,1},
-	{1,0,1,0,0,0,0,0,1,0,1},
-	{1,0,0,0,0,1,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,0,0,1},
-	{1,0,0,0,0,0,0,0,1,0,1},
-	{1,0,0,0,0,0,0,0,0,0,1},
-	{1,1,1,1,1,1,1,1,1,1,1}
-}
-
--- Sets the player's facing angle
-_raycaster.player.angle = math.rad(180)
-
--- Sets the resolution of the screen used by the raycaster
-_raycaster.screen.sizeH = horizontalSize
-_raycaster.screen.sizeV = verticalSize
--- Disables the collision of the screen
-_raycaster.screen.collision = false
--- Sets the position of the screen
----@diagnostic disable-next-line: assign-type-mismatch #The game implements an override to the `+` operator for ModVector3 addition
-_raycaster.screen.position = tm.players.GetPlayerTransform(0).GetPosition() + tm.vector3.Create(0, 0.05, 5)
-
--- Sets the size of the walls
-_raycaster.wallScallingFactor = wallScallingFactor
--- Spawns the screen
-_raycaster:spawn()
 
 -- Adds an UI to the host with debug information and controls
 function createDebugUI()
+	tm.playerUI.ClearUI(0)
 	tm.playerUI.AddUILabel(0, 0, "Angle: ")
 	tm.playerUI.AddUILabel(0, 1, "Position:")
 	tm.playerUI.AddUILabel(0, 2, "X=")
@@ -760,10 +770,18 @@ function createDebugUI()
 end
 
 function onPlayerJoined()
-	-- Adds debug controls and UI
-	tm.input.RegisterFunctionToKeyDownCallback(0, "increaseFov", keybinds.increaseFov)
-	tm.input.RegisterFunctionToKeyDownCallback(0, "decreaseFov", keybinds.decreaseFov)
-	createDebugUI()
+	if not loaded then
+		tm.playerUI.AddUIButton(0, "spawn", "Spawn Screen", spawnScreen)
+
+		-- Sets the game controls to be tracked and binds them to keybinds
+		for key, value in pairs(keybinds.gameControls) do
+			controls:addControl(key)
+			controls:bindControlToKeybind(key, value, 0)
+		end
+
+		-- Marks the mod as loaded
+		loaded = true
+	end
 end
 
 tm.players.OnPlayerJoined.add(onPlayerJoined)
