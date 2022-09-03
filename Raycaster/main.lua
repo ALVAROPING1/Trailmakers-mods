@@ -693,6 +693,11 @@ function updateDebugUI(playerId)
 	tm.playerUI.SetUIValue(playerId, 5, "FOV: " .. math.deg(_raycaster.player.fov))
 end
 
+function createSpawnUI(playerId)
+	tm.playerUI.ClearUI(playerId)
+	tm.playerUI.AddUIButton(playerId, "spawn", "Spawn Screen", spawnScreen)
+end
+
 ---------------------------------------------------------------------------------------------
 -- Update
 ---------------------------------------------------------------------------------------------
@@ -784,12 +789,14 @@ function spawnScreen()
 end
 
 function despawnScreen()
+	createSpawnUI(0)
 	_raycaster:despawn()
+	spawned = false
 end
 
 function onPlayerJoined()
 	if not loaded then
-		tm.playerUI.AddUIButton(0, "spawn", "Spawn Screen", spawnScreen)
+		createSpawnUI(0)
 
 		-- Sets the game controls to be tracked and binds them to keybinds
 		for key, value in pairs(keybinds.gameControls) do
