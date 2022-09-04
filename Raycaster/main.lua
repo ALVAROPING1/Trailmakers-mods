@@ -281,7 +281,7 @@ function raycaster:_updateScreen()
 	local rays = {}
 
 	-- Casts a ray for every column on the screen
-	for i = 0, self.screen.sizeH - 1 do
+	for i = self.screen.sizeH - 1, 0, -1 do
 		-- Calculates the offset of the ray from the player direction based on the amount of rays and the size of the FOV
 		local offset = self.player.fov * (-1/2 + 1 / (2 * self.screen.sizeH) + i / self.screen.sizeH)
 		-- Casts a ray and adds the result to the rays table
@@ -463,13 +463,13 @@ function raycaster:_updatePlayer(input)
 	local angle = 0
 
 	-- Adds movement/rotation to the totals based on the inputs
-	if input.moveLeft then y = y - self.player.moveStep end
-	if input.moveRight then y = y + self.player.moveStep end
+	if input.moveLeft then y = y + self.player.moveStep end
+	if input.moveRight then y = y - self.player.moveStep end
 	if input.moveForwards then x = x + self.player.moveStep end
 	if input.moveBackwards then x = x - self.player.moveStep end
 
-	if input.rotateLeft then angle = angle - self.player.rotateStep end
-	if input.rotateRight then angle = angle + self.player.rotateStep end
+	if input.rotateLeft then angle = angle + self.player.rotateStep end
+	if input.rotateRight then angle = angle - self.player.rotateStep end
 
 	-- Tries to move the player if the total movement isn't 0
 	if x ~= 0 or y ~= 0 then self:_movePlayerRelative(x, y) end
